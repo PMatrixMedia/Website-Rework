@@ -1,0 +1,19 @@
+.body {
+    background-color: black;
+}
+.jumbotron{
+    background-color: black;
+    display: inherit;
+}
+
+.jumbotron-fluid {
+    display: inherit; 
+    background-color: black;
+    color: white;
+  }
+
+.Container {
+    background-color: black
+
+}
+

@@ -1,0 +1,46 @@
+.Jumbotron {
+  background-color: black;
+  color: white;
+  text-align: left;
+}
+.h1{
+   text-align:left;
+}
+
+.Body {
+  background-color: black;
+}
+.body div {
+  background-color: black;
+}
+
+.Nav {
+  background-color: gray;
+}
+
+.Container {
+  background-color: black;
+}
+
+#avatar{
+  display: inherit;
+  position: relative;
+  bottom: 30px;
+}
+.bodyheading{
+  position:relative;
+  display:inline-block;
+  left: 25px;
+  padding:-20px;
+  bottom:20px;
+
+}
+
+.bodytext{
+  position:absolute;
+  display:block;
+  padding:30px;
+  right:40px;
+  margin-top: 30px;
+  margin-left:210px;
+}
