@@ -136,33 +136,46 @@ const SphereScene = () => {
       material.emissiveColor = new BABYLON.Color3(0.2, 0.2, 0.2);
       sphere.material = material;
 
-      // Label plane in front of sphere (renderingGroupId 1 = always on top)
-      const labelPlane = BABYLON.MeshBuilder.CreatePlane(
+      // Curved label wrapping around the front of the sphere (cylinder segment)
+      const labelHeight = 2;
+      const labelArc = 0.5; // 180 degrees - wraps around front half
+      const labelCylinder = BABYLON.MeshBuilder.CreateCylinder(
         `label_${config.id}`,
-        { size: 2, width: 2.8 },
+        {
+          height: labelHeight,
+          diameter: sphereRadius * 2 + 0.3,
+          tessellation: 32,
+          arc: labelArc,
+        },
         scene
       );
-      labelPlane.position = position.clone();
-      labelPlane.position.z += sphereRadius + 0.15;
-      labelPlane.position.y += 0.1;
-      labelPlane.renderingGroupId = 1;
+      labelCylinder.position = position.clone();
+      // Rotate so the curved arc faces front (camera); default arc faces +Z
+      labelCylinder.rotation.y = 10 ;
+      labelCylinder.renderingGroupId = 1;
 
       const labelMat = new BABYLON.StandardMaterial(`labelMat_${config.id}`, scene);
-      labelMat.diffuseTexture = createLabelTexture(
+      const labelTex = createLabelTexture(
         `labelTex_${config.id}`,
         config.caption,
         config.first,
         config.second,
         scene
       );
+      labelMat.diffuseTexture = labelTex;
       labelMat.diffuseTexture.hasAlpha = true;
+      labelMat.diffuseTexture.wrapU = BABYLON.Texture.CLAMP_ADDRESSMODE;
+      labelMat.diffuseTexture.wrapV = BABYLON.Texture.CLAMP_ADDRESSMODE;
+      labelMat.diffuseTexture.uScale = 2; // Stretch texture across the 180° arc
       labelMat.backFaceCulling = false;
       labelMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
       labelMat.depthFunction = BABYLON.Engine.ALWAYS;
       labelMat.disableDepthWrite = true;
-      labelPlane.material = labelMat;
+      labelCylinder.material = labelMat;
 
-      labelPlane.isPickable = false;
+      labelCylinder.isPickable = false;
+
+      const labelPlane = labelCylinder; // Keep variable name for compatibility with hover/scale logic
 
       sphere.metadata = { config, labelPlane };
       spheres.push(sphere);

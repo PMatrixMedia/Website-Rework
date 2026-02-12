@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import avatarImg from './avatar(2).jpg';
 
 // --- Helper Components & Styles ---
 // Since the original code imports external components and CSS,
@@ -53,7 +54,7 @@ const GlobalStyles = `
 // Placeholder for the Navbar component
 const RSnavbar = () => (
   <nav style={{ padding: '1rem', backgroundColor: '#343a40', color: 'white', textAlign: 'center' }}>
-    <p style={{ margin: 0 }}>Navbar Placeholder</p>
+    <p style={{ margin: 0 }}>About Me</p>
   </nav>
 );
 
@@ -63,10 +64,6 @@ const Banner = () => (
     <p style={{ margin: 0 }}>Banner Component Placeholder</p>
   </div>
 );
-
-// Mock image import
-const avatarImg = 'https://placehold.co/150x150/6c757d/white?text=Avatar';
-
 
 // --- Refactored About Component ---
 
@@ -87,7 +84,7 @@ const About = () => {
         <div className="container">
           <div className="media">
             <div className="avatar">
-              <img className='profile-image' src={avatarImg} alt="User Avatar" />
+              <img className='profile-image' src={avatarImg.src} alt="User Avatar" />
             </div>
             <div className="media-body">
               <h1 className='bodyheading'>About Me</h1>
