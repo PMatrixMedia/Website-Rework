@@ -2,13 +2,13 @@
 
 import React from "react";
 import Link from "next/link";
-import { Theme, Button } from "@radix-ui/themes";
+import { Theme, Button, Strong, Box,Text, Container, Section,Grid} from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 
 const HomeIcon = () => (
   <svg
-    width="16"
-    height="16"
+    width="40"
+    height="40"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -24,8 +24,8 @@ const HomeIcon = () => (
 
 const BlogIcon = () => (
   <svg
-    width="16"
-    height="16"
+    width="40"
+    height="40"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -44,8 +44,8 @@ const BlogIcon = () => (
 
 const FeaturesIcon = () => (
   <svg
-    width="16"
-    height="16"
+    width="40"
+    height="40"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -61,8 +61,11 @@ const FeaturesIcon = () => (
 
 function NavButton({ href, icon: Icon, children }) {
   return (
-    <Button variant="ghost" size="2" asChild className="text-white hover:bg-white/10 hover:text-white">
-      <Link href={href} className="flex items-center gap-2 px-4 py-2">
+    <Button variant="ghost" size="2" asChild className="text-white hover:bg-slate-900 hover:text-white">
+      <Link
+        href={href}
+        className="flex items-center gap-2 px-4 py-2 transition-all duration-200 ease-out hover:scale-110"
+      >
         {Icon && <Icon />}
         {children}
       </Link>
@@ -78,30 +81,41 @@ export default function PhaseMain() {
       grayColor="slate"
       radius="medium"
     >
-      <div className="min-h-screen bg-black">
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-800 px-6 py-4 flex items-center gap-2">
+     <Box py="4"
+     style={{backgroundColor: "gray"}}> 
+        <Grid columns="4" width="35%">
+          <Box width="30px" height="43px">
           <NavButton href="/" icon={HomeIcon}>
-            Home
+          <Text size="6"><Strong>Home</Strong></Text>
           </NavButton>
+          </Box>
+          <Box width="30px" height="30px">
           <NavButton href="/blog" icon={BlogIcon}>
-            Blog
+          <Text size="6"><Strong>Blog</Strong></Text>
           </NavButton>
+          </Box>
+          <Box width="30px" height="30px">
           <NavButton href="/features" icon={FeaturesIcon}>
-            Features
+          <Text size="6"><Strong>Features</Strong></Text>
           </NavButton>
+          </Box>
+          <Box gap="3" width="45px" height="30px">
           <NavButton href="/contact">
-            Contact
+          <Text size="7"><Strong>Contact</Strong></Text>
           </NavButton>
-        </nav>
-
-        <main className="pt-24 px-6 pb-8 max-w-3xl">
-          <p className="text-white/95 text-base leading-relaxed font-sans">
+          </Box>
+        </Grid>
+        </Box>
+        <Box align="left" justify="left">
+        <Section size="2"/>
+          <Container>
+          <Text size="8" color="white">
             Quick Update: I have redesigned my page to make the navigation more
             intuative and to be mobile friendly. Look forward to more updates
             moving forward and in the future.
-          </p>
-        </main>
-      </div>
+          </Text>
+          </Container>
+          </Box>
     </Theme>
   );
 }

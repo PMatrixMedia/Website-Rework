@@ -44,7 +44,8 @@ function createGradientTexture(name, color1, color2, scene) {
 }
 
 function createLabelTexture(name, caption, first, second, scene) {
-  const size = 600;
+  const scale = 2; // 50% larger text
+  const size = 1550; // 900 * 1.5 to accommodate larger text
   const texture = new BABYLON.DynamicTexture(name, size, size, scene);
   const ctx = texture.getContext();
 
@@ -53,15 +54,15 @@ function createLabelTexture(name, caption, first, second, scene) {
 
   const tailwindFont = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
   ctx.fillStyle = "black";
-  ctx.font = `bold 70px ${tailwindFont}`;
+  ctx.font = `bold ${Math.round(70 * scale)}px ${tailwindFont}`;
   ctx.textAlign = "center";
-  ctx.fillText(caption, size / 2, 145);
+  ctx.fillText(caption, size / 2, 218);
 
-  ctx.font = `bold 50px ${tailwindFont}`;
-  ctx.fillText(first, size / 2, 265);
+  ctx.font = `bold ${Math.round(50 * scale)}px ${tailwindFont}`;
+  ctx.fillText(first, size / 2, 398);
   if (second) {
-    ctx.font = `bold 50px ${tailwindFont}`;
-    ctx.fillText(second, size / 2, 335);
+    ctx.font = `bold ${Math.round(50 * scale)}px ${tailwindFont}`;
+    ctx.fillText(second, size / 2, 503);
   }
 
   texture.update();
@@ -110,7 +111,7 @@ const SphereScene = () => {
     light.intensity = 1.2;
 
     const spheres = [];
-    const sphereRadius = 1.5;
+    const sphereRadius = 2.5;
     const overlap = -1;
 
     SPHERE_CONFIG.forEach((config, index) => {
