@@ -11,7 +11,6 @@ const SPHERE_CONFIG = [
     colors: ["#ff7e5f", "#feb47b"],
     caption: "Home",
     first: "Main Site",
-    second: null,
     navPath: "/main",
   },
   {
@@ -43,9 +42,9 @@ function createGradientTexture(name, color1, color2, scene) {
   return texture;
 }
 
-function createLabelTexture(name, caption, first, second, scene) {
-  const scale = 2; // 50% larger text
-  const size = 1550; // 900 * 1.5 to accommodate larger text
+function createLabelTexture(name, caption, first, scene) {
+  const scale = 3; // 50% larger text
+  const size = 2550; // 900 * 1.5 to accommodate larger text
   const texture = new BABYLON.DynamicTexture(name, size, size, scene);
   const ctx = texture.getContext();
 
@@ -60,10 +59,6 @@ function createLabelTexture(name, caption, first, second, scene) {
 
   ctx.font = `bold ${Math.round(50 * scale)}px ${tailwindFont}`;
   ctx.fillText(first, size / 2, 398);
-  if (second) {
-    ctx.font = `bold ${Math.round(50 * scale)}px ${tailwindFont}`;
-    ctx.fillText(second, size / 2, 503);
-  }
 
   texture.update();
   return texture;
@@ -161,7 +156,6 @@ const SphereScene = () => {
         `labelTex_${config.id}`,
         config.caption,
         config.first,
-        config.second,
         scene
       );
       labelMat.diffuseTexture = labelTex;
