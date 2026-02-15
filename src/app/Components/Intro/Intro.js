@@ -10,7 +10,7 @@ const Intro = () => {
         <Box className="w-full max-w-[1400px] mx-auto px-4 flex flex-col items-center"align="center" justify="center">
           <Box className="py-6 w-full">
             <Image
-              src="/images/phasematrix-banner.png"
+              src="/images/resized-banner.png"
               alt="PhaseMatrix Media"
               width={1400}
               height={550}
