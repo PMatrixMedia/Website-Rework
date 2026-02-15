@@ -18,7 +18,7 @@ const SPHERE_CONFIG = [
     colors: ["#2193b0", "#6dd5ed"],
     caption: "AR&VR",
     first: "Projects & Services",
-    navPath: "https://phasevr-pmatrix.vercel.app/",
+    navPath: "https://newphasevr.vercel.app/",
   },
   {
     id: "tomato",
