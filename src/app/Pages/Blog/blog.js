@@ -2,8 +2,17 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import {
+  HomeIcon,
+  FileTextIcon,
+  GearIcon,
+  EnvelopeClosedIcon,
+} from "@radix-ui/react-icons";
 import { Theme, Card, Badge, Text, Heading, Box, Flex, Avatar, Button, Separator } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
+import avatarImg from "../About/avatar(2).jpg";
+
+const iconProps = { width: 24, height: 24 };
 
 const BlogCard = ({ post }) => (
   <Card size="2" className="overflow-hidden transition-all hover:shadow-xl hover:shadow-slate-500/10 hover:-translate-y-0.5">
@@ -73,7 +82,7 @@ export default function Blog() {
             excerpt: "Updates and insights from our team. Stay tuned for the latest news, tutorials, and behind-the-scenes content.",
             date: "Feb 13, 2025",
             tags: ["welcome", "updates"],
-            author: { name: "PhaseMatrix", avatar: null },
+            author: { name: "PhaseMatrix", avatar: avatarImg.src },
           },
           {
             id: 2,
@@ -81,7 +90,7 @@ export default function Blog() {
             excerpt: "We're rebuilding our site with a fresh look, improved navigation, and mobile-friendly design. Expect more updates soon.",
             date: "Feb 12, 2025",
             tags: ["design", "news"],
-            author: { name: "PhaseMatrix", avatar: null },
+            author: { name: "PhaseMatrix", avatar: avatarImg.src },
           },
           {
             id: 3,
@@ -89,7 +98,7 @@ export default function Blog() {
             excerpt: "Explore what we have in store for the future. New features, integrations, and improvements are on the roadmap.",
             date: "Feb 10, 2025",
             tags: ["features", "roadmap"],
-            author: { name: "PhaseMatrix", avatar: null },
+            author: { name: "PhaseMatrix", avatar: avatarImg.src },
           },
         ]);
       } finally {
@@ -102,9 +111,39 @@ export default function Blog() {
   return (
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+        {/* Nav bar with Radix icons */}
+        <Box className="bg-slate-800 px-6 py-4">
+          <Flex gap="6" align="center" wrap="wrap">
+            <Button variant="ghost" size="2" asChild>
+              <Link href="/" className="flex items-center gap-2 text-white hover:text-white">
+                <HomeIcon {...iconProps} />
+                <Text>Home</Text>
+              </Link>
+            </Button>
+            <Button variant="ghost" size="2" asChild>
+              <Link href="/blog" className="flex items-center gap-2 text-white hover:text-white">
+                <FileTextIcon {...iconProps} />
+                <Text>Blog</Text>
+              </Link>
+            </Button>
+            <Button variant="ghost" size="2" asChild>
+              <Link href="/features" className="flex items-center gap-2 text-white hover:text-white">
+                <GearIcon {...iconProps} />
+                <Text>Features</Text>
+              </Link>
+            </Button>
+            <Button variant="ghost" size="2" asChild>
+              <Link href="/contact" className="flex items-center gap-2 text-white hover:text-white">
+                <EnvelopeClosedIcon {...iconProps} />
+                <Text>Contact</Text>
+              </Link>
+            </Button>
+          </Flex>
+        </Box>
         <div className="max-w-6xl mx-auto px-6 py-16">
           <Flex direction="column" gap="6" mb="8">
-            <Link href="/main" className="text-slate-400 hover:text-white transition-colors text-sm">
+            <Link href="/main" className="text-slate-400 hover:text-white transition-colors text-sm flex items-center gap-2">
+              <HomeIcon {...iconProps} />
               ← Back to Main
             </Link>
             <Heading size="8" weight="bold" className="text-white">

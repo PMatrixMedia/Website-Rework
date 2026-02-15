@@ -11,7 +11,9 @@ import {
   Text,
   Avatar,
   Heading,
-  Card
+  Card,
+  Strong,
+  Blockquote
 } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import avatarImg from "./avatar(2).jpg";
@@ -38,9 +40,9 @@ const About = () => {
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
       <Box py="3"
              style={{backgroundColor: "gray"}}>
-        <Container size="2">        {/* Top Header Bar - Thin, dark grey, "About Me" uppercase */}
+        <Container size="3">        {/* Top Header Bar - Thin, dark grey, "About Me" uppercase */}
         <Box align="center" jusyify="center">
-          <Heading as="h2">
+          <Heading as="h3">
             About Me
           </Heading>
         </Box>
@@ -49,6 +51,7 @@ const About = () => {
               <Box align="right" justify="right"
               style={{backgroundColor: "gray"}}>
                 <Container align="right" justify="right">
+            <Flex gap="6" justify="end" align="center" className="py-3">
             {/* Right: Icons */}
               <Link
                 href="/"
@@ -100,50 +103,46 @@ const About = () => {
                   height={50}
                 />
               </a>
+            </Flex>
             </Container>
             </Box>
-            <Box>
-         <Container align="left" justify="left">
-      <Flex align="left" justify="left" gap="6" wrap="wrap">
-       {/* Left: Profile pic + two stacked fields */}
-
-         <Box align="left" justify="left">
-          <Card>
-          <Flex align="left" gap="4">
-           <Avatar
-             src={avatarImg.src}
-             alt="Profile"
-             size="9"
-             fallback="?"
-             radius="full"
-             className="border-2 border-white/20"
-           />
-            <Box>
-         <Text size="4">
-                  Your WebMaster
-                  </Text>
-                </Box>
-              </Flex>
+        {/* Card - center left, right above paragraph */}
+        <Box className="pt-6 pb-2 px-8">
+          <Container size="3" className="max-w-[1000px] mx-auto">
+            <Flex justify="start">
+              <Card className="max-w-fit">
+                <Flex align="center" gap="4">
+                  <Avatar
+                    src={avatarImg.src}
+                    alt="Profile"
+                    size="9"
+                    fallback="?"
+                    radius="full"
+                    className="border-2 border-white/20"
+                  />
+                  <Box>
+                    <Text size="6"><Strong>Your WebMaster</Strong></Text>
+                  </Box>
+                </Flex>
               </Card>
-              </Box>
-              </Flex>
-         </Container>
-         </Box>
+            </Flex>
+          </Container>
+        </Box>
         {/* Main Content - Black, white text with leading > */}
         <Box className="bg-black py-12 px-8 min-h-[50vh]">
           <Container size="3" className="max-w-[1000px]">
-            <Text
+            <Blockquote
               size="7">
                  
                Creative React Developer with 6 years designing useful,
               approachable user interfaces. Knowledgeable on all aspects of
-              Facebook&apos;s design best practices and emerging UI development
+              Facebook's design best practices and emerging UI development
               techniques. Skilled at connecting exceptional assets with users
               via creative UI frameworks and careful user experience
               optimization. Organized and dependable candidate successful at
               managing multiple priorities with a positive attitude.
               Willingness to take on added responsibilities to meet team goals.
-            </Text>
+            </Blockquote>
           </Container>
         </Box>
 

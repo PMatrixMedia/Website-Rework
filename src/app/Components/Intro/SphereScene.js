@@ -10,13 +10,13 @@ const SPHERE_CONFIG = [
     id: "pink",
     colors: ["#ff7e5f", "#feb47b"],
     caption: "Home",
-    first: "Main Site",
+    first: "MainSite",
     navPath: "/main",
   },
   {
     id: "blue",
     colors: ["#2193b0", "#6dd5ed"],
-    caption: "VR & AR",
+    caption: "AR&VR",
     first: "Projects & Services",
     navPath: "https://phasevr-pmatrix.vercel.app/",
   },
@@ -30,7 +30,7 @@ const SPHERE_CONFIG = [
 ];
 
 function createGradientTexture(name, color1, color2, scene) {
-  const size = 700;
+  const size = 800;
   const texture = new BABYLON.DynamicTexture(name, size, scene);
   const ctx = texture.getContext();
   const gradient = ctx.createLinearGradient(0, 0, size, 0);
@@ -42,9 +42,11 @@ function createGradientTexture(name, color1, color2, scene) {
   return texture;
 }
 
-function createLabelTexture(name, caption, first, scene) {
-  const scale = 3; // 50% larger text
-  const size = 2550; // 900 * 1.5 to accommodate larger text
+function createLabelTexture(name, caption, scene) {
+  const scale = 4;
+  const size = 2550;
+  const centerY = size / 2;
+  const centerX = size / 2;
   const texture = new BABYLON.DynamicTexture(name, size, size, scene);
   const ctx = texture.getContext();
 
@@ -53,12 +55,35 @@ function createLabelTexture(name, caption, first, scene) {
 
   const tailwindFont = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
   ctx.fillStyle = "black";
-  ctx.font = `bold ${Math.round(70 * scale)}px ${tailwindFont}`;
   ctx.textAlign = "center";
-  ctx.fillText(caption, size / 2, 218);
 
-  ctx.font = `bold ${Math.round(50 * scale)}px ${tailwindFont}`;
-  ctx.fillText(first, size / 2, 398);
+  ctx.font = `${Math.round(70 * scale)}px ${tailwindFont}`;
+  ctx.fillText(caption, centerX, centerY);
+
+  texture.update();
+  return texture;
+}
+
+function createFirstLabelTexture(name, first, scene) {
+  const size = 712;
+  const texture = new BABYLON.DynamicTexture(name, size, scene);
+  texture.hasAlpha = true;
+  const ctx = texture.getContext();
+
+  ctx.clearRect(0, 0, size, size);
+
+  const tailwindFont = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+  ctx.fillStyle = "white";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = `85px ${tailwindFont}`;
+
+  // Stretch text vertically - letters taller
+  ctx.save();
+  ctx.translate(size / 2, size / 2);
+  ctx.scale(1, 1.6);
+  ctx.fillText(first, 0, 0);
+  ctx.restore();
 
   texture.update();
   return texture;
@@ -97,10 +122,10 @@ const SphereScene = () => {
     camera.wheelPrecision = 20;
     camera.minZ = 0.1;
 
-    // Light
+    // Light - from top-left for glossy sphere highlights
     const light = new BABYLON.HemisphericLight(
       "light",
-      new BABYLON.Vector3(0, 1, 1),
+      new BABYLON.Vector3(-0.5, 1, 0.5),
       scene
     );
     light.intensity = 1.2;
@@ -131,10 +156,12 @@ const SphereScene = () => {
       material.diffuseTexture = gradientTex;
       material.emissiveTexture = gradientTex;
       material.emissiveColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+      material.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+      material.specularPower = 64;
       sphere.material = material;
 
       // Curved label wrapping around the front of the sphere (cylinder segment)
-      const labelHeight = 2;
+      const labelHeight = 4;
       const labelArc = 0.5; // 180 degrees - wraps around front half
       const labelCylinder = BABYLON.MeshBuilder.CreateCylinder(
         `label_${config.id}`,
@@ -155,14 +182,13 @@ const SphereScene = () => {
       const labelTex = createLabelTexture(
         `labelTex_${config.id}`,
         config.caption,
-        config.first,
         scene
       );
       labelMat.diffuseTexture = labelTex;
       labelMat.diffuseTexture.hasAlpha = true;
       labelMat.diffuseTexture.wrapU = BABYLON.Texture.CLAMP_ADDRESSMODE;
       labelMat.diffuseTexture.wrapV = BABYLON.Texture.CLAMP_ADDRESSMODE;
-      labelMat.diffuseTexture.uScale = 2; // Stretch texture across the 180° arc
+      labelMat.diffuseTexture.uScale = 2;
       labelMat.backFaceCulling = false;
       labelMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
       labelMat.depthFunction = BABYLON.Engine.ALWAYS;
@@ -171,9 +197,33 @@ const SphereScene = () => {
 
       labelCylinder.isPickable = false;
 
+      // White "first" text below each sphere - horizontal on x, centered on z
+      const firstPlane = BABYLON.MeshBuilder.CreatePlane(
+        `first_${config.id}`,
+        { width: 7, height: 1.2 },
+        scene
+      );
+      // Position below sphere, centered on x and z (z=0 in local space)
+      firstPlane.position = new BABYLON.Vector3(0, -sphereRadius - 0.8, 0);
+      firstPlane.parent = sphere;
+      // Orient horizontal (face camera) - billboard keeps text readable and horizontal
+      firstPlane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_X;
+      const firstTex = createFirstLabelTexture(`firstTex_${config.id}`, config.first, scene);
+      const firstMat = new BABYLON.StandardMaterial(`firstMat_${config.id}`, scene);
+      firstMat.diffuseTexture = firstTex;
+      firstMat.diffuseTexture.hasAlpha = true;
+      firstMat.emissiveTexture = firstTex;
+      firstMat.emissiveColor = new BABYLON.Color3(1, 1, 1);
+      firstMat.backFaceCulling = false;
+      firstMat.depthFunction = BABYLON.Engine.ALWAYS;
+      firstMat.disableDepthWrite = true;
+      firstPlane.material = firstMat;
+      firstPlane.renderingGroupId = 1;
+      firstPlane.isPickable = false;
+
       const labelPlane = labelCylinder; // Keep variable name for compatibility with hover/scale logic
 
-      sphere.metadata = { config, labelPlane };
+      sphere.metadata = { config, labelPlane, firstPlane };
       spheres.push(sphere);
 
       // Hover effect

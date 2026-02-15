@@ -9,7 +9,7 @@ const Intro = () => {
   return (
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
       <Box size="3" align="center" justify="center">
-        <Heading size="8" weight="bold" className="text-white">
+        <Heading size="9" weight="bold" className="text-white">
             PhaseMatrix Media
           </Heading>
           </Box>
