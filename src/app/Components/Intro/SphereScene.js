@@ -31,7 +31,7 @@ const SPHERE_CONFIG = [
 ];
 
 function createGradientTexture(name, color1, color2, scene) {
-  const size = 256;
+  const size = 700;
   const texture = new BABYLON.DynamicTexture(name, size, scene);
   const ctx = texture.getContext();
   const gradient = ctx.createLinearGradient(0, 0, size, 0);
@@ -44,23 +44,24 @@ function createGradientTexture(name, color1, color2, scene) {
 }
 
 function createLabelTexture(name, caption, first, second, scene) {
-  const size = 512;
+  const size = 600;
   const texture = new BABYLON.DynamicTexture(name, size, size, scene);
   const ctx = texture.getContext();
 
   ctx.fillStyle = "rgba(0,0,0,0.3)";
   ctx.fillRect(0, 0, size, size);
 
+  const tailwindFont = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
   ctx.fillStyle = "black";
-  ctx.font = "bold 53px Arial";
+  ctx.font = `bold 70px ${tailwindFont}`;
   ctx.textAlign = "center";
-  ctx.fillText(caption, size / 2, 120);
+  ctx.fillText(caption, size / 2, 145);
 
-  ctx.font = "bold 41px Arial";
-  ctx.fillText(first, size / 2, 220);
+  ctx.font = `bold 50px ${tailwindFont}`;
+  ctx.fillText(first, size / 2, 265);
   if (second) {
-    ctx.font = "bold 29px Arial";
-    ctx.fillText(second, size / 2, 280);
+    ctx.font = `bold 50px ${tailwindFont}`;
+    ctx.fillText(second, size / 2, 335);
   }
 
   texture.update();
@@ -84,7 +85,7 @@ const SphereScene = () => {
     engineRef.current = engine;
 
     const scene = new BABYLON.Scene(engine);
-    scene.clearColor = new BABYLON.Color4(0.145, 0.196, 0.216, 1); // #253237
+    scene.clearColor = new BABYLON.Color4(0, 0, 0, 1); // black
     sceneRef.current = scene;
 
     // Camera - orthographic or perspective for nice overlap view
