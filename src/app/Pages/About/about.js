@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -35,7 +33,7 @@ const HomeIcon = () => (
   </svg>
 );
 
-const About = () => {
+export default function About() {
   return (
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
       <Box py="3"
@@ -150,4 +148,3 @@ const About = () => {
   );
 };
 
-export default About;
