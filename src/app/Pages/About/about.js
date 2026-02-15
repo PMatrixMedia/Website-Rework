@@ -119,7 +119,7 @@ const About = () => {
              className="border-2 border-white/20"
            />
             <Box>
-         <Text size="3">
+         <Text size="4">
                   Your WebMaster
                   </Text>
                 </Box>
