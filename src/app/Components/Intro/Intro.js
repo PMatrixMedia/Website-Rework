@@ -3,7 +3,8 @@ import Image from "next/image";
 import { Theme, Box, Text } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import SphereScene from "./SphereScene";
-import bannerImg from "../../Images/resizedbanner.png";
+
+const bannerImg = "/Images/resizedbanner.png";
 
 const Intro = () => {
   return (
@@ -12,9 +13,11 @@ const Intro = () => {
           <Box className="py-6 w-full">
             <Image
               src={bannerImg}
-              alt="PhaseMatrix Media"
+              alt="PhaseMatrixMedia - Aerial Cinematography, Drone Operations, Immersive Media"
               width={1400}
               height={550}
+              priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1400px"
               className="object-contain w-full"
             />
           </Box>
