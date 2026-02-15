@@ -15,7 +15,7 @@ const Intro = () => {
               src="/images/phasematrix-banner.png"
               alt="PhaseMatrix Media"
               width={1400}
-              height={321}
+              height={550}
               className="object-contain w-full"
             />
           </Box>
