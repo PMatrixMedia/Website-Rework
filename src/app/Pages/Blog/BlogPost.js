@@ -1,45 +1,9 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
-import { Theme, Card, Badge, Text, Heading, Box, Flex, Avatar } from "@radix-ui/themes";
+import { Theme, Badge, Text, Heading, Box, Flex, Avatar } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 
-export default function BlogPost({ postId }) {
-  const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/posts/${postId}`
-        );
-        if (res.ok) {
-          const data = await res.json();
-          setPost(data);
-        } else {
-          setPost(null);
-        }
-      } catch {
-        setPost(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPost();
-  }, [postId]);
-
-  if (loading) {
-    return (
-      <Theme appearance="dark" accentColor="gray" grayColor="slate">
-        <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
-          <div className="animate-pulse text-slate-400">Loading...</div>
-        </div>
-      </Theme>
-    );
-  }
-
+export default function BlogPost({ post }) {
   if (!post) {
     return (
       <Theme appearance="dark" accentColor="gray" grayColor="slate">

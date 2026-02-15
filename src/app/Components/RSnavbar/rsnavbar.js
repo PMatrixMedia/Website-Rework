@@ -1,5 +1,3 @@
-"use client"; // Use this if you are in a Next.js App Router environment
-
 import React, { useState } from 'react';
 import {
   Collapse,

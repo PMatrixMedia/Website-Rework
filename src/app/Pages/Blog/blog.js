@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import {
   HomeIcon,
@@ -59,59 +57,22 @@ const BlogCard = ({ post }) => (
   </Card>
 );
 
-export default function Blog() {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+function addAvatarToPosts(posts) {
+  return posts.map((p) => ({
+    ...p,
+    author: {
+      ...p.author,
+      avatar: p.author?.avatar || avatarImg?.src,
+    },
+  }));
+}
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/posts`);
-        if (res.ok) {
-          const data = await res.json();
-          setPosts(data.posts || []);
-        } else {
-          throw new Error("Failed to fetch");
-        }
-      } catch {
-        setPosts([
-          {
-            id: 1,
-            title: "Welcome to PhaseMatrix Media Blog",
-            excerpt: "Updates and insights from our team. Stay tuned for the latest news, tutorials, and behind-the-scenes content.",
-            date: "Feb 13, 2025",
-            tags: ["welcome", "updates"],
-            author: { name: "PhaseMatrix", avatar: avatarImg.src },
-          },
-          {
-            id: 2,
-            title: "Website Redesign in Progress",
-            excerpt: "We're rebuilding our site with a fresh look, improved navigation, and mobile-friendly design. Expect more updates soon.",
-            date: "Feb 12, 2025",
-            tags: ["design", "news"],
-            author: { name: "PhaseMatrix", avatar: avatarImg.src },
-          },
-          {
-            id: 3,
-            title: "New Features Coming Soon",
-            excerpt: "Explore what we have in store for the future. New features, integrations, and improvements are on the roadmap.",
-            date: "Feb 10, 2025",
-            tags: ["features", "roadmap"],
-            author: { name: "PhaseMatrix", avatar: avatarImg.src },
-          },
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPosts();
-  }, []);
+export default function Blog({ posts = [] }) {
+  const postsWithAvatar = addAvatarToPosts(posts);
 
   return (
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-        {/* Nav bar with Radix icons */}
         <Box className="bg-slate-800 px-6 py-4">
           <Flex gap="6" align="center" wrap="wrap">
             <Button variant="ghost" size="2" asChild>
@@ -155,23 +116,13 @@ export default function Blog() {
             <Separator size="4" />
           </Flex>
 
-          {loading ? (
-            <Flex justify="center" align="center" className="py-24">
-              <div className="animate-pulse flex flex-col gap-4 w-full max-w-md">
-                <div className="h-4 bg-slate-700 rounded w-3/4" />
-                <div className="h-4 bg-slate-700 rounded w-1/2" />
-                <div className="h-32 bg-slate-700 rounded" />
-              </div>
-            </Flex>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {posts.map((post) => (
-                <Link key={post.id} href={`/blog/${post.id}`} className="block">
-                  <BlogCard post={post} />
-                </Link>
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {postsWithAvatar.map((post) => (
+              <Link key={post.id} href={`/blog/${post.id}`} className="block">
+                <BlogCard post={post} />
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </Theme>
