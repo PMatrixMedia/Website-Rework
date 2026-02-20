@@ -33,11 +33,15 @@ function createGradientTexture(name, color1, color2, scene) {
   const size = 800;
   const texture = new BABYLON.DynamicTexture(name, size, scene);
   const ctx = texture.getContext();
+  // Mirror gradient: color1 -> color2 -> color1 for seamless wrap around sphere
   const gradient = ctx.createLinearGradient(0, 0, size, 0);
   gradient.addColorStop(0, color1);
-  gradient.addColorStop(1, color2);
+  gradient.addColorStop(0.5, color2);
+  gradient.addColorStop(1, color1);
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, size, size);
+  texture.wrapU = BABYLON.Texture.WRAP_ADDRESSMODE;
+  texture.wrapV = BABYLON.Texture.WRAP_ADDRESSMODE;
   texture.update();
   return texture;
 }
@@ -135,10 +139,38 @@ const SphereScene = () => {
 
     // Triangle positions in XZ plane - spaced so spheres (diameter 5) don't touch
     const TRIANGLE_POSITIONS = [
-      new BABYLON.Vector3(0, 0, 4),        // front (center)
-      new BABYLON.Vector3(-3.5, 0, -2.5), // back-left
-      new BABYLON.Vector3(3.5, 0, -2.5),  // back-right
+      new BABYLON.Vector3(0, 0, 4),         // front (center)
+      new BABYLON.Vector3(-3.5, 0, -2.5),  // back-left
+      new BABYLON.Vector3(3.5, 0, -2.5),   // back-right
     ];
+
+    // Control points for curved paths - arc around outside so spheres never cross
+    // Map: fromPosIndex -> toPosIndex -> control point
+    const PATH_CONTROLS = {
+      "0-2": new BABYLON.Vector3(5.5, 0, 1),   // front → back-right: arc right
+      "1-0": new BABYLON.Vector3(-5.5, 0, 1),  // back-left → front: arc left
+      "2-1": new BABYLON.Vector3(0, 0, -5.5),  // back-right → back-left: arc back
+    };
+
+    function bezierQuadratic(t, p0, p1, p2) {
+      const u = 1 - t;
+      return new BABYLON.Vector3(
+        u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
+        u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y,
+        u * u * p0.z + 2 * u * t * p1.z + t * t * p2.z
+      );
+    }
+
+    function createCurvedPathKeys(fromPos, toPos, fromIdx, toIdx, numFrames = 40) {
+      const key = `${fromIdx}-${toIdx}`;
+      const ctrl = PATH_CONTROLS[key] || BABYLON.Vector3.Center(fromPos, toPos);
+      const keys = [];
+      for (let i = 0; i <= numFrames; i++) {
+        const t = i / numFrames;
+        keys.push({ frame: i, value: bezierQuadratic(t, fromPos, ctrl, toPos) });
+      }
+      return keys;
+    }
 
     // Which sphere index (0,1,2) is at which position (0=front, 1=back-left, 2=back-right)
     let positionAssignments = [0, 1, 2]; // sphere 0 at front, 1 at back-left, 2 at back-right
@@ -277,14 +309,20 @@ const SphereScene = () => {
       ];
 
       const frameRate = 60 / (ANIM_DURATION_MS / 1000);
+      const numFrames = 60;
 
       spheres.forEach((sphere, sphereIndex) => {
-        const targetPosIndex = nextAssignments.indexOf(sphereIndex);
-        const targetPos = TRIANGLE_POSITIONS[targetPosIndex];
-        const keys = [
-          { frame: 0, value: sphere.position.clone() },
-          { frame: 60, value: targetPos.clone() },
-        ];
+        const fromIdx = positionAssignments.indexOf(sphereIndex);
+        const toIdx = nextAssignments.indexOf(sphereIndex);
+        const fromPos = TRIANGLE_POSITIONS[fromIdx];
+        const toPos = TRIANGLE_POSITIONS[toIdx];
+        const keys = createCurvedPathKeys(
+          sphere.position.clone(),
+          toPos.clone(),
+          fromIdx,
+          toIdx,
+          numFrames
+        );
         const anim = new BABYLON.Animation(
           `cycle_${sphereIndex}`,
           "position",
@@ -296,11 +334,11 @@ const SphereScene = () => {
         sphere.animations = [anim];
       });
 
-      scene.beginAnimation(spheres[0], 0, 60, false, 1, () => {
+      scene.beginAnimation(spheres[0], 0, numFrames, false, 1, () => {
         isAnimating = false;
       });
-      scene.beginAnimation(spheres[1], 0, 60, false, 1);
-      scene.beginAnimation(spheres[2], 0, 60, false, 1);
+      scene.beginAnimation(spheres[1], 0, numFrames, false, 1);
+      scene.beginAnimation(spheres[2], 0, numFrames, false, 1);
 
       positionAssignments = nextAssignments;
     };
