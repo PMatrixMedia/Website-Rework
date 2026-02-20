@@ -362,14 +362,7 @@ const SphereScene = () => {
   return (
     <canvas
       ref={canvasRef}
-      style={{
-        width: "100%",
-        maxWidth: "1400px",
-        height: "50vh",
-        minHeight: "400px",
-        touchAction: "none",
-        outline: "none",
-      }}
+      className="sphere-canvas"
     />
   );
 };

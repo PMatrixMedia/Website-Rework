@@ -9,8 +9,8 @@ const bannerImg = "/Images/resizedbanner.png";
 const Intro = () => {
   return (
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
-        <Box className="w-full max-w-[1400px] mx-auto px-4 flex flex-col items-center"align="center" justify="center">
-          <Box className="py-6 w-full">
+        <Box className="intro-container w-full max-w-[1400px] mx-auto flex flex-col items-center" align="center" justify="center">
+          <Box className="intro-banner w-full">
             <Image
               src={bannerImg}
               alt="PhaseMatrixMedia - Aerial Cinematography, Drone Operations, Immersive Media"
@@ -24,7 +24,7 @@ const Intro = () => {
           <Box className="w-full">
             <SphereScene />
           </Box>
-          <Box className="w-full flex justify-center py-6">
+          <Box className="w-full flex justify-center intro-footer-text">
             <Text size="9" color="orange" className="nabla-footer text-center">
               Click the Spheres to explore the site.
             </Text>

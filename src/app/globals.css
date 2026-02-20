@@ -52,3 +52,124 @@ a {
     "EDPT" 77,
     "EHLT" 12;
 }
+
+/* ========== Responsive: Intro & Sphere Scene ========== */
+.intro-container {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.intro-banner {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.intro-footer-text {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.sphere-canvas {
+  width: 100%;
+  max-width: 1400px;
+  height: 45vh;
+  min-height: 280px;
+  touch-action: none;
+  outline: none;
+}
+
+/* Small phones (portrait) */
+@media (max-width: 480px) {
+  .intro-container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .intro-banner {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .intro-footer-text {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .sphere-canvas {
+    height: 40vh;
+    min-height: 220px;
+  }
+}
+
+/* Tablets, landscape phones */
+@media (min-width: 481px) and (max-width: 768px) {
+  .intro-container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .intro-footer-text {
+    font-size: 1.25rem;
+  }
+
+  .sphere-canvas {
+    height: 45vh;
+    min-height: 320px;
+  }
+}
+
+/* Tablets, small laptops */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .intro-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .intro-banner {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .intro-footer-text {
+    font-size: 1.5rem;
+  }
+
+  .sphere-canvas {
+    height: 50vh;
+    min-height: 360px;
+  }
+}
+
+/* Desktop & large screens */
+@media (min-width: 1025px) {
+  .intro-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .intro-banner {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .intro-footer-text {
+    font-size: 2rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .sphere-canvas {
+    height: 50vh;
+    min-height: 400px;
+  }
+}
+
+/* Large desktops, 4K */
+@media (min-width: 1920px) {
+  .sphere-canvas {
+    min-height: 500px;
+  }
+}
+
+

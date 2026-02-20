@@ -49,7 +49,7 @@ export default function About() {
               <Box align="right" justify="right"
               style={{backgroundColor: "gray"}}>
                 <Container align="right" justify="right">
-            <Flex gap="6" justify="end" align="center" className="py-3">
+            <Flex gap="3" justify="end" align="center" wrap="wrap" className="py-3 sm:gap-6 px-4 sm:px-0">
             {/* Right: Icons */}
               <Link
                 href="/"

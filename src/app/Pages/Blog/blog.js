@@ -73,7 +73,7 @@ export default function Blog({ posts = [] }) {
   return (
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-        <Box className="bg-slate-800 px-6 py-4">
+        <Box className="bg-slate-800 px-4 py-3 sm:px-6 sm:py-4">
           <Flex gap="6" align="center" wrap="wrap">
             <Button variant="ghost" size="2" asChild>
               <Link href="/" className="flex items-center gap-2 text-white hover:text-white">
@@ -101,7 +101,7 @@ export default function Blog({ posts = [] }) {
             </Button>
           </Flex>
         </Box>
-        <div className="max-w-6xl mx-auto px-6 py-16">
+        <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 sm:py-12 md:py-16">
           <Flex direction="column" gap="6" mb="8">
             <Link href="/main" className="text-slate-400 hover:text-white transition-colors text-sm flex items-center gap-2">
               <HomeIcon {...iconProps} />

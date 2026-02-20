@@ -36,7 +36,7 @@ export default function PhaseMain() {
     >
      <Box py="4"
      style={{backgroundColor: "gray"}}> 
-        <Flex gap="6" align="center" wrap="wrap">
+        <Flex gap="3" align="center" wrap="wrap" className="sm:gap-6 px-4 sm:px-6">
           <NavButton href="/" icon={HomeIcon}>
             <Text size="6"><Strong>Home</Strong></Text>
           </NavButton>
