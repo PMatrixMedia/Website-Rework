@@ -1,26 +1,12 @@
 import React from "react";
-import Image from "next/image";
 import { Theme, Box, Text } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import SphereScene from "./SphereScene";
-
-const bannerImg = "/Images/resizedbanner.png";
 
 const Intro = () => {
   return (
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
         <Box className="intro-container w-full max-w-[1400px] mx-auto flex flex-col items-center" align="center" justify="center">
-          <Box className="intro-banner w-full">
-            <Image
-              src={bannerImg}
-              alt="PhaseMatrixMedia - Aerial Cinematography, Drone Operations, Immersive Media"
-              width={1400}
-              height={550}
-              priority
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1400px"
-              className="object-contain w-full"
-            />
-          </Box>
           <Box className="w-full">
             <SphereScene />
           </Box>

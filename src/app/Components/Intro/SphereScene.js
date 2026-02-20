@@ -113,12 +113,12 @@ const SphereScene = () => {
     scene.clearColor = new BABYLON.Color4(0, 0, 0, 1); // black
     sceneRef.current = scene;
 
-    // Camera - orthographic or perspective for nice overlap view
+    // Camera - view plate and spheres
     const camera = new BABYLON.ArcRotateCamera(
       "camera",
       -Math.PI / 2,
-      Math.PI / 2.5,
-      14,
+      Math.PI / 2.4,
+      18,
       BABYLON.Vector3.Zero(),
       scene
     );
@@ -134,22 +134,47 @@ const SphereScene = () => {
     );
     light.intensity = 1.2;
 
+    // Circular plate - PhaseMatrixMedia disc with spheres on top
+    const plateRadius = 9;
+    const plate = BABYLON.MeshBuilder.CreateDisc(
+      "phasematrixPlate",
+      { radius: plateRadius, tessellation: 64 },
+      scene
+    );
+    plate.rotation.x = -Math.PI / 2; // Lay flat in XZ plane
+    plate.position.y = -3; // Lowered - spheres float above
+    plate.renderingGroupId = 0;
+
+    const plateMat = new BABYLON.StandardMaterial("plateMat", scene);
+    const plateTexture = new BABYLON.Texture("/Images/phasematrixplate.png", scene);
+    plateTexture.uScale = 1;
+    plateTexture.vScale = 1;
+    plateTexture.wrapU = BABYLON.Texture.CLAMP_ADDRESSMODE;
+    plateTexture.wrapV = BABYLON.Texture.CLAMP_ADDRESSMODE;
+    plateMat.diffuseTexture = plateTexture;
+    plateMat.emissiveTexture = plateTexture;
+    plateMat.emissiveColor = new BABYLON.Color3(0.25, 0.25, 0.25);
+    plateMat.backFaceCulling = false;
+    plateMat.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+    plate.material = plateMat;
+    plate.isPickable = false;
+
     const spheres = [];
     const sphereRadius = 2.5;
 
-    // Triangle positions in XZ plane - spaced so spheres (diameter 5) don't touch
+    // Triangle positions - raised so spheres float above plate (plate at y=-3)
+    const SPHERE_HEIGHT = 2.5;
     const TRIANGLE_POSITIONS = [
-      new BABYLON.Vector3(0, 0, 4),         // front (center)
-      new BABYLON.Vector3(-3.5, 0, -2.5),  // back-left
-      new BABYLON.Vector3(3.5, 0, -2.5),   // back-right
+      new BABYLON.Vector3(0, SPHERE_HEIGHT, 4),         // front (center)
+      new BABYLON.Vector3(-3.5, SPHERE_HEIGHT, -2.5),  // back-left
+      new BABYLON.Vector3(3.5, SPHERE_HEIGHT, -2.5),   // back-right
     ];
 
-    // Control points for curved paths - arc around outside so spheres never cross
-    // Map: fromPosIndex -> toPosIndex -> control point
+    // Control points for curved paths - same height as sphere positions
     const PATH_CONTROLS = {
-      "0-2": new BABYLON.Vector3(5.5, 0, 1),   // front → back-right: arc right
-      "1-0": new BABYLON.Vector3(-5.5, 0, 1),  // back-left → front: arc left
-      "2-1": new BABYLON.Vector3(0, 0, -5.5),  // back-right → back-left: arc back
+      "0-2": new BABYLON.Vector3(5.5, SPHERE_HEIGHT, 1),   // front → back-right: arc right
+      "1-0": new BABYLON.Vector3(-5.5, SPHERE_HEIGHT, 1),  // back-left → front: arc left
+      "2-1": new BABYLON.Vector3(0, SPHERE_HEIGHT, -5.5),  // back-right → back-left: arc back
     };
 
     function bezierQuadratic(t, p0, p1, p2) {
@@ -242,8 +267,8 @@ const SphereScene = () => {
         { width: 7, height: 1.2 },
         scene
       );
-      // Position below sphere, centered on x and z (z=0 in local space)
-      firstPlane.position = new BABYLON.Vector3(0, -sphereRadius - 0.8, 0);
+      // Position below sphere - raised so text floats higher above plate
+      firstPlane.position = new BABYLON.Vector3(0, -sphereRadius - 0.4, 0);
       firstPlane.parent = sphere;
       // Orient horizontal (face camera) - billboard keeps text readable and horizontal
       firstPlane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_X;
