@@ -162,46 +162,29 @@ const SphereScene = () => {
     const spheres = [];
     const sphereRadius = 2.5;
 
-    // Triangle positions - raised so spheres float above plate (plate at y=-3)
+    // Continuous rotation: spheres on a circle, rotate 360° then pause
     const SPHERE_HEIGHT = 2.5;
-    const TRIANGLE_POSITIONS = [
-      new BABYLON.Vector3(0, SPHERE_HEIGHT, 4),         // front (center)
-      new BABYLON.Vector3(-3.5, SPHERE_HEIGHT, -2.5),  // back-left
-      new BABYLON.Vector3(3.5, SPHERE_HEIGHT, -2.5),   // back-right
-    ];
+    const ORBIT_RADIUS = 4.5;
+    const ROTATION_DURATION_MS = 5000; // One full revolution
+    const PAUSE_DURATION_MS = 2000;
 
-    // Control points for curved paths - same height as sphere positions
-    const PATH_CONTROLS = {
-      "0-2": new BABYLON.Vector3(5.5, SPHERE_HEIGHT, 1),   // front → back-right: arc right
-      "1-0": new BABYLON.Vector3(-5.5, SPHERE_HEIGHT, 1),  // back-left → front: arc left
-      "2-1": new BABYLON.Vector3(0, SPHERE_HEIGHT, -5.5),  // back-right → back-left: arc back
-    };
-
-    function bezierQuadratic(t, p0, p1, p2) {
-      const u = 1 - t;
-      return new BABYLON.Vector3(
-        u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
-        u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y,
-        u * u * p0.z + 2 * u * t * p1.z + t * t * p2.z
-      );
+    // Ease in-out for smooth accelerate/decelerate
+    function cubicEaseInOut(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     }
 
-    function createCurvedPathKeys(fromPos, toPos, fromIdx, toIdx, numFrames = 40) {
-      const key = `${fromIdx}-${toIdx}`;
-      const ctrl = PATH_CONTROLS[key] || BABYLON.Vector3.Center(fromPos, toPos);
-      const keys = [];
-      for (let i = 0; i <= numFrames; i++) {
-        const t = i / numFrames;
-        keys.push({ frame: i, value: bezierQuadratic(t, fromPos, ctrl, toPos) });
-      }
-      return keys;
-    }
-
-    // Which sphere index (0,1,2) is at which position (0=front, 1=back-left, 2=back-right)
-    let positionAssignments = [0, 1, 2]; // sphere 0 at front, 1 at back-left, 2 at back-right
+    let rotationStartTime = 0;
+    let pauseStartTime = 0;
+    let state = "paused"; // "rotating" | "paused"
 
     SPHERE_CONFIG.forEach((config, index) => {
-      const position = TRIANGLE_POSITIONS[positionAssignments.indexOf(index)].clone();
+      // Initial position: sphere 0 at front (angle 0), 1 at 120°, 2 at 240°
+      const angleOffset = (index * 2 * Math.PI) / 3;
+      const position = new BABYLON.Vector3(
+        ORBIT_RADIUS * Math.sin(angleOffset),
+        SPHERE_HEIGHT,
+        ORBIT_RADIUS * Math.cos(angleOffset)
+      );
 
       const sphere = BABYLON.MeshBuilder.CreateSphere(
         `sphere_${config.id}`,
@@ -317,59 +300,47 @@ const SphereScene = () => {
       );
     });
 
-    // Cycle spheres: front→back, back-left→front, back-right→back-left (one at a time)
-    const CYCLE_INTERVAL_MS = 3500;
-    const ANIM_DURATION_MS = 1200;
-    let cycleTimer = null;
-    let isAnimating = false;
+    // Continuous rotation: update sphere positions each frame
+    const rotationObserver = scene.onBeforeRenderObservable.add(() => {
+      const now = performance.now();
 
-    const runCycle = () => {
-      if (isAnimating) return;
-      isAnimating = true;
+      if (state === "paused") {
+        if (now - pauseStartTime >= PAUSE_DURATION_MS) {
+          state = "rotating";
+          rotationStartTime = now;
+        }
+        return;
+      }
 
-      const nextAssignments = [
-        positionAssignments[1],
-        positionAssignments[2],
-        positionAssignments[0],
-      ];
+      const elapsed = now - rotationStartTime;
+      const t = Math.min(elapsed / ROTATION_DURATION_MS, 1);
 
-      const frameRate = 60 / (ANIM_DURATION_MS / 1000);
-      const numFrames = 60;
+      if (t >= 1) {
+        // Revolution complete - snap to final positions and pause
+        spheres.forEach((sphere, index) => {
+          const angleOffset = (index * 2 * Math.PI) / 3;
+          sphere.position.x = ORBIT_RADIUS * Math.sin(angleOffset);
+          sphere.position.z = ORBIT_RADIUS * Math.cos(angleOffset);
+        });
+        state = "paused";
+        pauseStartTime = now;
+        return;
+      }
 
-      spheres.forEach((sphere, sphereIndex) => {
-        const fromIdx = positionAssignments.indexOf(sphereIndex);
-        const toIdx = nextAssignments.indexOf(sphereIndex);
-        const fromPos = TRIANGLE_POSITIONS[fromIdx];
-        const toPos = TRIANGLE_POSITIONS[toIdx];
-        const keys = createCurvedPathKeys(
-          sphere.position.clone(),
-          toPos.clone(),
-          fromIdx,
-          toIdx,
-          numFrames
-        );
-        const anim = new BABYLON.Animation(
-          `cycle_${sphereIndex}`,
-          "position",
-          frameRate,
-          BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-          BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
-        );
-        anim.setKeys(keys);
-        sphere.animations = [anim];
+      const easedT = cubicEaseInOut(t);
+      const angle = easedT * 2 * Math.PI;
+
+      spheres.forEach((sphere, index) => {
+        const angleOffset = (index * 2 * Math.PI) / 3;
+        const totalAngle = angle + angleOffset;
+        sphere.position.x = ORBIT_RADIUS * Math.sin(totalAngle);
+        sphere.position.z = ORBIT_RADIUS * Math.cos(totalAngle);
       });
+    });
 
-      scene.beginAnimation(spheres[0], 0, numFrames, false, 1, () => {
-        isAnimating = false;
-      });
-      scene.beginAnimation(spheres[1], 0, numFrames, false, 1);
-      scene.beginAnimation(spheres[2], 0, numFrames, false, 1);
-
-      positionAssignments = nextAssignments;
-    };
-
-    cycleTimer = setInterval(runCycle, CYCLE_INTERVAL_MS);
-    setTimeout(runCycle, 500); // First cycle after brief delay
+    // Start first rotation after brief delay
+    state = "rotating";
+    rotationStartTime = performance.now();
 
     const handleResize = () => engine.resize();
     window.addEventListener("resize", handleResize);
@@ -377,7 +348,7 @@ const SphereScene = () => {
     engine.runRenderLoop(() => scene.render());
 
     return () => {
-      if (cycleTimer) clearInterval(cycleTimer);
+      scene.onBeforeRenderObservable.remove(rotationObserver);
       window.removeEventListener("resize", handleResize);
       scene.dispose();
       engine.dispose();
