@@ -132,12 +132,19 @@ const SphereScene = () => {
 
     const spheres = [];
     const sphereRadius = 2.5;
-    const overlap = -1;
+
+    // Triangle positions in XZ plane - spaced so spheres (diameter 5) don't touch
+    const TRIANGLE_POSITIONS = [
+      new BABYLON.Vector3(0, 0, 4),        // front (center)
+      new BABYLON.Vector3(-3.5, 0, -2.5), // back-left
+      new BABYLON.Vector3(3.5, 0, -2.5),  // back-right
+    ];
+
+    // Which sphere index (0,1,2) is at which position (0=front, 1=back-left, 2=back-right)
+    let positionAssignments = [0, 1, 2]; // sphere 0 at front, 1 at back-left, 2 at back-right
 
     SPHERE_CONFIG.forEach((config, index) => {
-      // Position spheres in a row with overlap (like the original circles)
-      const xOffset = index * (sphereRadius * 2 - overlap) - (SPHERE_CONFIG.length - 1) * (sphereRadius - overlap / 2);
-      const position = new BABYLON.Vector3(xOffset, 0, 0);
+      const position = TRIANGLE_POSITIONS[positionAssignments.indexOf(index)].clone();
 
       const sphere = BABYLON.MeshBuilder.CreateSphere(
         `sphere_${config.id}`,
@@ -173,9 +180,9 @@ const SphereScene = () => {
         },
         scene
       );
-      labelCylinder.position = position.clone();
-      // Rotate so the curved arc faces front (camera); default arc faces +Z
-      labelCylinder.rotation.y = 10 ;
+      labelCylinder.position = BABYLON.Vector3.Zero();
+      labelCylinder.parent = sphere; // Label moves with sphere
+      labelCylinder.rotation.y = 10;
       labelCylinder.renderingGroupId = 1;
 
       const labelMat = new BABYLON.StandardMaterial(`labelMat_${config.id}`, scene);
@@ -226,16 +233,14 @@ const SphereScene = () => {
       sphere.metadata = { config, labelPlane, firstPlane };
       spheres.push(sphere);
 
-      // Hover effect
+      // Hover effect (labelPlane is child of sphere, scales with it)
       sphere.onPointerEnter = () => {
         scene.hoverCursor = "pointer";
         sphere.scaling = new BABYLON.Vector3(1.15, 1.15, 1.15);
-        labelPlane.scaling = new BABYLON.Vector3(1.15, 1.15, 1.15);
       };
       sphere.onPointerOut = () => {
         scene.hoverCursor = "";
         sphere.scaling = BABYLON.Vector3.One();
-        labelPlane.scaling = BABYLON.Vector3.One();
       };
 
       sphere.actionManager = new BABYLON.ActionManager(scene);
@@ -255,12 +260,61 @@ const SphereScene = () => {
       );
     });
 
+    // Cycle spheres: front→back, back-left→front, back-right→back-left (one at a time)
+    const CYCLE_INTERVAL_MS = 3500;
+    const ANIM_DURATION_MS = 1200;
+    let cycleTimer = null;
+    let isAnimating = false;
+
+    const runCycle = () => {
+      if (isAnimating) return;
+      isAnimating = true;
+
+      const nextAssignments = [
+        positionAssignments[1],
+        positionAssignments[2],
+        positionAssignments[0],
+      ];
+
+      const frameRate = 60 / (ANIM_DURATION_MS / 1000);
+
+      spheres.forEach((sphere, sphereIndex) => {
+        const targetPosIndex = nextAssignments.indexOf(sphereIndex);
+        const targetPos = TRIANGLE_POSITIONS[targetPosIndex];
+        const keys = [
+          { frame: 0, value: sphere.position.clone() },
+          { frame: 60, value: targetPos.clone() },
+        ];
+        const anim = new BABYLON.Animation(
+          `cycle_${sphereIndex}`,
+          "position",
+          frameRate,
+          BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+          BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+        );
+        anim.setKeys(keys);
+        sphere.animations = [anim];
+      });
+
+      scene.beginAnimation(spheres[0], 0, 60, false, 1, () => {
+        isAnimating = false;
+      });
+      scene.beginAnimation(spheres[1], 0, 60, false, 1);
+      scene.beginAnimation(spheres[2], 0, 60, false, 1);
+
+      positionAssignments = nextAssignments;
+    };
+
+    cycleTimer = setInterval(runCycle, CYCLE_INTERVAL_MS);
+    setTimeout(runCycle, 500); // First cycle after brief delay
+
     const handleResize = () => engine.resize();
     window.addEventListener("resize", handleResize);
 
     engine.runRenderLoop(() => scene.render());
 
     return () => {
+      if (cycleTimer) clearInterval(cycleTimer);
       window.removeEventListener("resize", handleResize);
       scene.dispose();
       engine.dispose();
