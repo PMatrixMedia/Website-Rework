@@ -132,7 +132,7 @@ export default function About() {
             <Blockquote
               size="7">
                  
-               Creative React Developer with 6 years designing useful,
+               Creative React Developer with 8 years designing useful,
               approachable user interfaces. Knowledgeable on all aspects of
               Facebook's design best practices and emerging UI development
               techniques. Skilled at connecting exceptional assets with users
