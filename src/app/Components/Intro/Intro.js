@@ -1,4 +1,6 @@
 import React from "react";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Theme, Box, Text } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import SphereScene from "./SphereScene";
@@ -16,6 +18,8 @@ const Intro = () => {
             </Text>
           </Box>
         </Box>
+        <Analytics />
+        <SpeedInsights />
     </Theme>
   );
 };
