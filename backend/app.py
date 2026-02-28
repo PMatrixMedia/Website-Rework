@@ -2,46 +2,63 @@ import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
-import mysql.connector
-from mysql.connector import Error
+from graphql import graphql_sync
+from graphql.error import format_error as graphql_format_error
+
+import psycopg2
+from psycopg2 import Error
+from psycopg2.extras import RealDictCursor
 
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
 
+
 def get_db_connection():
-    """Create and return a MySQL database connection."""
+    """Create and return a PostgreSQL database connection.
+    Uses DATABASE_URL if set (e.g. Supabase), otherwise falls back to individual vars.
+    """
     try:
-        conn = mysql.connector.connect(
-            host=os.getenv("MYSQL_HOST", "localhost"),
-            port=int(os.getenv("MYSQL_PORT", "3306")),
-            user=os.getenv("MYSQL_USER", "root"),
-            password=os.getenv("MYSQL_PASSWORD", ""),
-            database=os.getenv("MYSQL_DATABASE", "phasematrix_blog"),
-            charset="utf8mb4",
-        )
+        database_url = os.getenv("DATABASE_URL")
+        if database_url:
+            conn = psycopg2.connect(database_url)
+        else:
+            conn = psycopg2.connect(
+                host=os.getenv("PGHOST", "localhost"),
+                port=int(os.getenv("PGPORT", "5432")),
+                user=os.getenv("PGUSER", "postgres"),
+                password=os.getenv("PGPASSWORD", ""),
+                dbname=os.getenv("PGDATABASE", "phasematrix_blog"),
+            )
         return conn
     except Error as e:
         print(f"Database connection error: {e}")
         return None
 
 
-@app.route("/api/health", methods=["GET"])
-def health():
-    """Health check endpoint."""
-    return jsonify({"status": "ok", "service": "blog-api"})
+def _get_post_tags(conn, post_id):
+    """Get tags for a post."""
+    try:
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute("""
+            SELECT t.name FROM tags t
+            JOIN post_tags pt ON t.id = pt.tag_id
+            WHERE pt.post_id = %s
+        """, (post_id,))
+        return [r["name"] for r in cursor.fetchall()]
+    except Error:
+        return []
 
 
-@app.route("/api/posts", methods=["GET"])
-def get_posts():
-    """Get all blog posts."""
+def _fetch_posts():
+    """Fetch all posts for GraphQL."""
     conn = get_db_connection()
     if not conn:
-        return jsonify({"error": "Database unavailable", "posts": []}), 503
+        return []
 
     try:
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""
             SELECT p.id, p.title, p.excerpt, p.content, p.image_url as image,
                    p.created_at, p.updated_at,
@@ -51,7 +68,6 @@ def get_posts():
             ORDER BY p.created_at DESC
         """)
         rows = cursor.fetchall()
-
         posts = []
         for row in rows:
             posts.append({
@@ -69,21 +85,21 @@ def get_posts():
             })
         cursor.close()
         conn.close()
-        return jsonify({"posts": posts})
-    except Error as e:
-        conn.close()
-        return jsonify({"error": str(e), "posts": []}), 500
+        return posts
+    except Error:
+        if conn:
+            conn.close()
+        return []
 
 
-@app.route("/api/posts/<int:post_id>", methods=["GET"])
-def get_post(post_id):
-    """Get a single blog post by ID."""
+def _fetch_post(post_id):
+    """Fetch single post for GraphQL."""
     conn = get_db_connection()
     if not conn:
-        return jsonify({"error": "Database unavailable"}), 503
+        return None
 
     try:
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""
             SELECT p.id, p.title, p.excerpt, p.content, p.image_url as image,
                    p.created_at, p.updated_at,
@@ -97,7 +113,7 @@ def get_post(post_id):
         conn.close()
 
         if not row:
-            return jsonify({"error": "Post not found"}), 404
+            return None
 
         post = {
             "id": row["id"],
@@ -115,24 +131,38 @@ def get_post(post_id):
         if conn2:
             post["tags"] = _get_post_tags(conn2, row["id"])
             conn2.close()
-        return jsonify(post)
-    except Error as e:
-        conn.close()
-        return jsonify({"error": str(e)}), 500
-
-
-def _get_post_tags(conn, post_id):
-    """Get tags for a post."""
-    try:
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("""
-            SELECT t.name FROM tags t
-            JOIN post_tags pt ON t.id = pt.tag_id
-            WHERE pt.post_id = %s
-        """, (post_id,))
-        return [r["name"] for r in cursor.fetchall()]
+        return post
     except Error:
-        return []
+        if conn:
+            conn.close()
+        return None
+
+
+@app.route("/api/health", methods=["GET"])
+def health():
+    """Health check endpoint."""
+    return jsonify({"status": "ok", "service": "blog-api"})
+
+
+@app.route("/graphql", methods=["POST"])
+def graphql():
+    """GraphQL endpoint."""
+    from schema import schema
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"errors": [{"message": "No query provided"}]}), 400
+
+    query = data.get("query")
+    variables = data.get("variables") or {}
+
+    result = graphql_sync(schema, query, variable_values=variables)
+
+    response = {"data": result.data}
+    if result.errors:
+        response["errors"] = [{"message": e.message} for e in result.errors]
+
+    return jsonify(response)
 
 
 if __name__ == "__main__":

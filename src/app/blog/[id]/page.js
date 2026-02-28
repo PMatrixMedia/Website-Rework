@@ -1,14 +1,15 @@
 import BlogPost from "../../Pages/Blog/BlogPost";
+import { graphqlRequest, POST_QUERY } from "@/lib/graphql";
 
 async function getPost(id) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
   try {
-    const res = await fetch(`${apiUrl}/api/posts/${id}`, {
+    const data = await graphqlRequest(POST_QUERY, { id: parseInt(id, 10) }, {
       next: { revalidate: 60 },
     });
-    if (res.ok) return await res.json();
-  } catch {}
-  return null;
+    return data?.post || null;
+  } catch {
+    return null;
+  }
 }
 
 export async function generateMetadata({ params }) {

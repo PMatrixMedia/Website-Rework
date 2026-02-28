@@ -1,11 +1,11 @@
 # PhaseMatrix Blog API
 
-Python Flask backend with MySQL for the blog.
+Python Flask backend with PostgreSQL for the blog.
 
 ## Prerequisites
 
 - **Python 3.10+**
-- **MySQL 8.0+**
+- **PostgreSQL 12+**
 
 ## Setup
 
@@ -18,26 +18,27 @@ python --version
 pip --version
 ```
 
-### 2. Install MySQL
+### 2. Install PostgreSQL
 
-- **Windows**: [MySQL Installer](https://dev.mysql.com/downloads/installer/)
-- **macOS**: `brew install mysql`
-- **Linux**: `sudo apt install mysql-server` (Ubuntu) or equivalent
+- **Windows**: [PostgreSQL Installer](https://www.postgresql.org/download/windows/)
+- **macOS**: `brew install postgresql`
+- **Linux**: `sudo apt install postgresql postgresql-contrib` (Ubuntu) or equivalent
 
-Start MySQL and create the database:
+Create the database and run the schema:
 
 ```bash
-mysql -u root -p < init_db.sql
+createdb phasematrix_blog
+psql -U postgres -d phasematrix_blog -f init_db.sql
 ```
 
-Or run the SQL manually in MySQL Workbench / command line.
+Or run the SQL manually in psql or pgAdmin.
 
 ### 3. Configure Environment
 
 ```bash
 cd backend
 cp .env.example .env
-# Edit .env with your MySQL credentials
+# Edit .env with your PostgreSQL credentials
 ```
 
 ### 4. Install Dependencies
@@ -56,6 +57,36 @@ API runs at `http://localhost:5000`.
 
 ## API Endpoints
 
+### GraphQL (primary for blog)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/graphql` | GraphQL API |
+
+**Example query – list posts:**
+```graphql
+query GetPosts {
+  posts {
+    id title excerpt image date
+    author { name avatar }
+    tags
+  }
+}
+```
+
+**Example query – single post:**
+```graphql
+query GetPost($id: Int!) {
+  post(id: $id) {
+    id title excerpt content image date
+    author { name avatar }
+    tags
+  }
+}
+```
+
+### REST (legacy)
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/health` | Health check |
@@ -68,4 +99,6 @@ Add to your Next.js `.env.local`:
 
 ```
 NEXT_PUBLIC_API_URL=http://localhost:5000
+# Or for GraphQL directly:
+NEXT_PUBLIC_GRAPHQL_URL=http://localhost:5000/graphql
 ```

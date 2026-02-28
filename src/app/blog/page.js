@@ -1,4 +1,5 @@
 import Blog from "../Pages/Blog/blog";
+import { graphqlRequest, POSTS_QUERY } from "@/lib/graphql";
 
 export const metadata = {
   title: "Blog | PhaseMatrix Media",
@@ -33,15 +34,14 @@ const FALLBACK_POSTS = [
 ];
 
 async function getPosts() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
   try {
-    const res = await fetch(`${apiUrl}/api/posts`, { next: { revalidate: 60 } });
-    if (res.ok) {
-      const data = await res.json();
-      return data.posts || FALLBACK_POSTS;
-    }
-  } catch {}
-  return FALLBACK_POSTS;
+    const data = await graphqlRequest(POSTS_QUERY, {}, {
+      next: { revalidate: 60 },
+    });
+    return data?.posts || FALLBACK_POSTS;
+  } catch {
+    return FALLBACK_POSTS;
+  }
 }
 
 export default async function BlogPage() {

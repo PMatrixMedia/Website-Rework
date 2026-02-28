@@ -1,33 +1,46 @@
--- PhaseMatrix Blog Database Schema
--- Run this script after creating the database
-
-CREATE DATABASE IF NOT EXISTS phasematrix_blog;
-USE phasematrix_blog;
+-- PhaseMatrix Blog Database Schema (PostgreSQL)
+-- Create the database first: createdb phasematrix_blog
+-- Then run: psql -U postgres -d phasematrix_blog -f init_db.sql
 
 CREATE TABLE IF NOT EXISTS authors (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     avatar_url VARCHAR(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS tags (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS posts (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     excerpt TEXT,
-    content LONGTEXT,
+    content TEXT,
     image_url VARCHAR(500),
     author_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE SET NULL
 );
+
+-- Trigger to auto-update updated_at on posts
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS update_posts_updated_at ON posts;
+CREATE TRIGGER update_posts_updated_at
+    BEFORE UPDATE ON posts
+    FOR EACH ROW
+    EXECUTE PROCEDURE update_updated_at_column();
 
 CREATE TABLE IF NOT EXISTS post_tags (
     post_id INT NOT NULL,
