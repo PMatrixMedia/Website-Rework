@@ -1,6 +1,9 @@
-import React from "react";
+"use client";
+
+import React, { useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import gsap from "gsap";
 import {
   Theme,
   Box,
@@ -15,6 +18,9 @@ import {
 } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import avatarImg from "./avatar(2).jpg";
+
+const BLOCKQUOTE_TEXT =
+  "Creative React Developer with 8 years designing useful, approachable user interfaces. Knowledgeable on all aspects of Facebook's design best practices and emerging UI development techniques. Skilled at connecting exceptional assets with users via creative UI frameworks and careful user experience optimization. Organized and dependable candidate successful at managing multiple priorities with a positive attitude. Willingness to take on added responsibilities to meet team goals.";
 
 const HomeIcon = () => (
   <svg
@@ -34,13 +40,70 @@ const HomeIcon = () => (
 );
 
 export default function About() {
+  const headingRef = useRef(null);
+  const navRef = useRef(null);
+  const cardRef = useRef(null);
+  const blockquoteRef = useRef(null);
+  const wordRefs = useRef([]);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      if (headingRef.current) {
+        gsap.from(headingRef.current, {
+          opacity: 0,
+          y: -20,
+          duration: 0.9,
+          ease: "power2.out",
+        });
+      }
+
+      const navChildren = navRef.current ? Array.from(navRef.current.children) : [];
+      if (navChildren.length) {
+        gsap.from(navChildren, {
+          opacity: 0,
+          y: -80,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: "bounce.out",
+          delay: 0.3,
+        });
+      }
+
+      if (cardRef.current) {
+        gsap.from(cardRef.current, {
+          opacity: 0,
+          x: -30,
+          duration: 0.9,
+          ease: "power2.out",
+          delay: 0.6,
+        });
+      }
+
+      const wordsToAnimate = wordRefs.current.filter(Boolean);
+      if (wordsToAnimate.length) {
+        gsap.from(wordsToAnimate, {
+          opacity: 0,
+          y: 12,
+          duration: 0.6,
+          stagger: 0.05,
+          ease: "power2.out",
+          delay: 0.9,
+        });
+      }
+    });
+
+    return () => ctx.revert();
+  }, []);
+
+  const words = BLOCKQUOTE_TEXT.split(/\s+/);
+
   return (
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
       <Box py="3"
              style={{backgroundColor: "gray"}}>
         <Container size="3">        {/* Top Header Bar - Thin, dark grey, "About Me" uppercase */}
         <Box align="center" jusyify="center">
-          <Heading as="h3">
+          <Heading as="h3" ref={headingRef}>
             About Me
           </Heading>
         </Box>
@@ -49,7 +112,7 @@ export default function About() {
               <Box align="right" justify="right"
               style={{backgroundColor: "gray"}}>
                 <Container align="right" justify="right">
-            <Flex gap="3" justify="end" align="center" wrap="wrap" className="py-3 sm:gap-6 px-4 sm:px-0">
+            <Flex ref={navRef} gap="3" justify="end" align="center" wrap="wrap" className="py-3 sm:gap-6 px-4 sm:px-0">
             {/* Right: Icons */}
               <Link
                 href="/"
@@ -108,7 +171,7 @@ export default function About() {
         <Box className="pt-6 pb-2 px-8">
           <Container size="3" className="max-w-[1000px] mx-auto">
             <Flex justify="start">
-              <Card className="max-w-fit">
+              <Card ref={cardRef} className="max-w-fit">
                 <Flex align="center" gap="4">
                   <Avatar
                     src={avatarImg.src}
@@ -129,17 +192,16 @@ export default function About() {
         {/* Main Content - Black, white text with leading > */}
         <Box className="bg-black py-12 px-8 min-h-[50vh]">
           <Container size="3" className="max-w-[1000px]">
-            <Blockquote
-              size="7">
-                 
-               Creative React Developer with 8 years designing useful,
-              approachable user interfaces. Knowledgeable on all aspects of
-              Facebook's design best practices and emerging UI development
-              techniques. Skilled at connecting exceptional assets with users
-              via creative UI frameworks and careful user experience
-              optimization. Organized and dependable candidate successful at
-              managing multiple priorities with a positive attitude.
-              Willingness to take on added responsibilities to meet team goals.
+            <Blockquote ref={blockquoteRef} size="7">
+              {words.map((word, i) => (
+                <span
+                  key={i}
+                  ref={(el) => (wordRefs.current[i] = el)}
+                  style={{ display: "inline-block", marginRight: "0.25em" }}
+                >
+                  {word}
+                </span>
+              ))}
             </Blockquote>
           </Container>
         </Box>
