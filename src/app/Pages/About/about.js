@@ -129,7 +129,7 @@ export default function About() {
                 className="hover:opacity-80 transition-opacity"
               >
                 <Image
-                  src="/images/github.png"
+                  src="/Images/github.png"
                   alt="GitHub"
                   width={38}
                   height={38}
@@ -158,7 +158,7 @@ export default function About() {
                 className="hover:opacity-80 transition-opacity"
               >
                 <Image
-                  src="/images/codesandbox-logo.png"
+                  src="/Images/codesandbox-logo.png"
                   alt="CodeSandbox"
                   width={187}
                   height={50}
