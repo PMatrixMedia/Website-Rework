@@ -144,7 +144,7 @@ export default function About() {
                 className="hover:opacity-80 transition-opacity"
               >
                 <Image
-                  src="/images/linkedin.png"
+                  src="/Images/linkedin.png"
                   alt="LinkedIn"
                   width={90}
                   height={38}
