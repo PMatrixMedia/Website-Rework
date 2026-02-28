@@ -20,6 +20,9 @@
 # production
 /build
 
+# blog entries (file fallback when DB unavailable)
+/data/blog-entries.json
+
 # misc
 .DS_Store
 *.pem

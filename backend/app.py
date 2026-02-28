@@ -3,7 +3,6 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
 from graphql import graphql_sync
-from graphql.error import format_error as graphql_format_error
 
 import psycopg2
 from psycopg2 import Error

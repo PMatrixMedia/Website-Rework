@@ -1,10 +1,13 @@
 import Blog from "../Pages/Blog/blog";
 import { graphqlRequest, POSTS_QUERY } from "@/lib/graphql";
+import { getEntries } from "@/lib/blogEntries";
 
 export const metadata = {
   title: "Blog | PhaseMatrix Media",
   description: "Updates, news, and insights from PhaseMatrix Media",
 };
+
+export const dynamic = "force-dynamic";
 
 const FALLBACK_POSTS = [
   {
@@ -35,13 +38,21 @@ const FALLBACK_POSTS = [
 
 async function getPosts() {
   try {
+    const dbPosts = await getEntries();
+    if (dbPosts.length > 0) return dbPosts;
+  } catch (e) {
+    console.error("getPosts DB error:", e);
+  }
+  try {
     const data = await graphqlRequest(POSTS_QUERY, {}, {
       next: { revalidate: 60 },
     });
-    return data?.posts || FALLBACK_POSTS;
+    const graphqlPosts = data?.posts || [];
+    if (graphqlPosts.length > 0) return graphqlPosts;
   } catch {
-    return FALLBACK_POSTS;
+    // GraphQL fallback failed
   }
+  return FALLBACK_POSTS;
 }
 
 export default async function BlogPage() {
