@@ -20,7 +20,6 @@ import {
   GearIcon,
   EnvelopeClosedIcon,
 } from "@radix-ui/react-icons";
-import { createPostViaGraphql } from "@/lib/graphql";
 import "@radix-ui/themes/styles.css";
 
 const iconProps = { width: 24, height: 24 };
@@ -44,12 +43,35 @@ export default function Post() {
   const handleUpdate = async () => {
     setIsSubmitting(true);
     try {
-      const post = await createPostViaGraphql({
-        title: title || "New Update",
-        excerpt: content.slice(0, 120),
-        content,
+      const apiUrl = `${window.location.origin}/api/blog`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: title || "New Update",
+          excerpt: content.slice(0, 120),
+          content,
+        }),
+        signal: controller.signal,
       });
-      if (post) {
+
+      clearTimeout(timeoutId);
+
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error(res.ok ? "Invalid response from server" : `Server error (${res.status})`);
+      }
+
+      if (!res.ok) {
+        throw new Error(data?.error || "Failed to save post");
+      }
+
+      if (data?.success) {
         setModalError(null);
         setShowModal(true);
         setContent("");
@@ -60,7 +82,11 @@ export default function Post() {
       }
     } catch (err) {
       console.error(err);
-      setModalError(err.message || "Failed to save post");
+      const message =
+        err.name === "AbortError"
+          ? "Request timed out. Please try again."
+          : err.message || "Failed to save post";
+      setModalError(message);
       setShowModal(true);
     } finally {
       setIsSubmitting(false);

@@ -5,7 +5,41 @@ Python Flask backend with PostgreSQL for the blog.
 ## Prerequisites
 
 - **Python 3.10+**
-- **PostgreSQL 12+**
+- **PostgreSQL-compatible database** (Neon recommended)
+
+## Neon quick start (recommended)
+
+Use your Neon resources:
+
+- Org: `org-sweet-hat-08378913`
+- Project: `little-surf-12235556` (`blog`)
+
+### 1. Get a Neon connection string
+
+1. Open [Neon Console](https://console.neon.tech/)
+2. Select project `blog`
+3. Copy the pooled PostgreSQL URI from **Connection Details**
+
+### 2. Configure environment
+
+```bash
+cd backend
+cp .env.example .env
+# Paste your Neon URI into DATABASE_URL in .env
+```
+
+### 3. Initialize schema
+
+```bash
+psql "<YOUR_NEON_DATABASE_URL>" -f init_db.sql
+```
+
+### 4. Run API
+
+```bash
+pip install -r requirements.txt
+python app.py
+```
 
 ## Setup
 
@@ -18,7 +52,7 @@ python --version
 pip --version
 ```
 
-### 2. Install PostgreSQL
+### 2. Install PostgreSQL (local-only option)
 
 - **Windows**: [PostgreSQL Installer](https://www.postgresql.org/download/windows/)
 - **macOS**: `brew install postgresql`

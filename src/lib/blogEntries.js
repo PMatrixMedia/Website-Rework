@@ -1,9 +1,43 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import path from "path";
-import { getDb } from "./db";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const FILE_PATH = path.join(DATA_DIR, "blog-entries.json");
+const DEFAULT_HASURA_ENDPOINT = "https://model-honeybee-77.hasura.app/v1/graphql";
+
+function getHasuraConfig() {
+  return {
+    endpoint: process.env.HASURA_GRAPHQL_ENDPOINT || DEFAULT_HASURA_ENDPOINT,
+    adminSecret: process.env.HASURA_ADMIN_SECRET,
+  };
+}
+
+async function hasuraRequest(query, variables = {}) {
+  const { endpoint, adminSecret } = getHasuraConfig();
+  if (!adminSecret) {
+    throw new Error("HASURA_ADMIN_SECRET is not set.");
+  }
+
+  const res = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-hasura-admin-secret": adminSecret,
+    },
+    body: JSON.stringify({ query, variables }),
+    cache: "no-store",
+  });
+
+  const json = await res.json();
+  if (!res.ok) {
+    const message = json?.errors?.[0]?.message || `Hasura request failed (${res.status})`;
+    throw new Error(message);
+  }
+  if (json.errors?.length) {
+    throw new Error(json.errors[0]?.message || "Hasura GraphQL error");
+  }
+  return json.data;
+}
 
 function ensureDataDir() {
   if (!existsSync(DATA_DIR)) {
@@ -35,81 +69,150 @@ function saveFileEntries(data) {
 
 function rowToPost(row) {
   if (!row) return null;
+  const createdAt = row.created_at || row.date;
   return {
     id: row.id,
     title: row.title,
     excerpt: row.excerpt || "",
     content: row.content || "",
-    date: row.created_at
-      ? new Date(row.created_at).toLocaleDateString("en-US", {
+    date: createdAt
+      ? new Date(createdAt).toLocaleDateString("en-US", {
           year: "numeric",
           month: "short",
           day: "numeric",
         })
-      : row.date || "",
+      : "",
     tags: row.tags || ["update"],
     author: { name: row.author_name || "PhaseMatrix", avatar: row.author_avatar },
   };
 }
 
 async function getEntriesFromDb() {
-  const pool = getDb();
-  const res = await pool.query(`
-    SELECT p.id, p.title, p.excerpt, p.content, p.created_at,
-           a.name as author_name, a.avatar_url as author_avatar
-    FROM posts p
-    LEFT JOIN authors a ON p.author_id = a.id
-    ORDER BY p.created_at DESC
-  `);
-  const tagsRes = await pool.query(`
-    SELECT pt.post_id, array_agg(t.name) as tags
-    FROM post_tags pt
-    JOIN tags t ON pt.tag_id = t.id
-    GROUP BY pt.post_id
-  `);
-  const tagsMap = Object.fromEntries(
-    tagsRes.rows.map((r) => [r.post_id, r.tags])
+  const query = `
+    query GetBlogData {
+      posts(order_by: { created_at: desc }) {
+        id
+        title
+        excerpt
+        content
+        created_at
+        author_id
+      }
+      authors {
+        id
+        name
+        avatar_url
+      }
+      post_tags {
+        post_id
+        tag_id
+      }
+      tags {
+        id
+        name
+      }
+    }
+  `;
+
+  const data = await hasuraRequest(query);
+  const authorsById = Object.fromEntries(
+    (data.authors || []).map((a) => [a.id, a])
   );
-  return res.rows.map((r) => {
+  const tagsById = Object.fromEntries((data.tags || []).map((t) => [t.id, t.name]));
+  const tagsByPostId = {};
+  for (const link of data.post_tags || []) {
+    if (!tagsByPostId[link.post_id]) tagsByPostId[link.post_id] = [];
+    if (tagsById[link.tag_id]) tagsByPostId[link.post_id].push(tagsById[link.tag_id]);
+  }
+
+  return (data.posts || []).map((r) => {
+    const author = authorsById[r.author_id] || {};
     const post = rowToPost(r);
-    post.tags = tagsMap[r.id] || ["update"];
+    post.author = {
+      name: author.name || "PhaseMatrix",
+      avatar: author.avatar_url || null,
+    };
+    post.tags = tagsByPostId[r.id] || ["update"];
     return post;
   });
 }
 
 async function addEntryToDb({ title, excerpt, content }) {
-  if (process.env.VERCEL && !process.env.DATABASE_URL) {
-    throw new Error(
-      "DATABASE_URL is not set. Add it in Vercel → Settings → Environment Variables. See VERCEL_ENV.md."
-    );
+  const getAuthorQuery = `
+    query GetFirstAuthor {
+      authors(order_by: { id: asc }, limit: 1) {
+        id
+        name
+        avatar_url
+      }
+    }
+  `;
+  const authorData = await hasuraRequest(getAuthorQuery);
+  const author = authorData?.authors?.[0];
+  if (!author) {
+    throw new Error("No author found in Hasura. Seed the database first.");
   }
-  const pool = getDb();
-  await pool.query(
-    `INSERT INTO tags (name) VALUES ('update') ON CONFLICT (name) DO NOTHING`
-  );
-  const insertRes = await pool.query(
-    `INSERT INTO posts (title, excerpt, content, author_id)
-     VALUES ($1, $2, $3, 1)
-     RETURNING id, title, excerpt, content, created_at`,
-    [
-      title || "Untitled",
-      excerpt || content?.slice(0, 120) || "New update",
-      content || excerpt,
-    ]
-  );
-  const row = insertRes.rows[0];
-  const tagRes = await pool.query(`SELECT id FROM tags WHERE name = 'update'`);
-  const tagId = tagRes.rows[0]?.id;
-  if (tagId) {
-    await pool.query(
-      `INSERT INTO post_tags (post_id, tag_id) VALUES ($1, $2)`,
-      [row.id, tagId]
-    );
+
+  const upsertTagMutation = `
+    mutation UpsertTag($name: String!) {
+      insert_tags_one(
+        object: { name: $name }
+        on_conflict: { constraint: tags_name_key, update_columns: [name] }
+      ) {
+        id
+        name
+      }
+    }
+  `;
+  const tagData = await hasuraRequest(upsertTagMutation, { name: "update" });
+  const tagId = tagData?.insert_tags_one?.id;
+  if (!tagId) {
+    throw new Error("Failed to create or fetch update tag.");
   }
+
+  const insertPostMutation = `
+    mutation InsertPost($title: String!, $excerpt: String!, $content: String!, $author_id: Int!) {
+      insert_posts_one(
+        object: {
+          title: $title
+          excerpt: $excerpt
+          content: $content
+          author_id: $author_id
+        }
+      ) {
+        id
+        title
+        excerpt
+        content
+        created_at
+      }
+    }
+  `;
+  const insertPostData = await hasuraRequest(insertPostMutation, {
+    title: title || "Untitled",
+    excerpt: excerpt || content?.slice(0, 120) || "New update",
+    content: content || excerpt || "",
+    author_id: author.id,
+  });
+  const row = insertPostData?.insert_posts_one;
+  if (!row?.id) {
+    throw new Error("Failed to insert post in Hasura.");
+  }
+
+  const linkTagMutation = `
+    mutation LinkTagToPost($post_id: Int!, $tag_id: Int!) {
+      insert_post_tags_one(object: { post_id: $post_id, tag_id: $tag_id }) {
+        post_id
+        tag_id
+      }
+    }
+  `;
+  await hasuraRequest(linkTagMutation, { post_id: row.id, tag_id: tagId });
+
   return rowToPost({
     ...row,
-    author_name: "PhaseMatrix",
-    author_avatar: null,
+    author_name: author.name || "PhaseMatrix",
+    author_avatar: author.avatar_url || null,
     tags: ["update"],
   });
 }
@@ -127,29 +230,52 @@ export async function getEntries() {
 export async function getEntryById(id) {
   const numId = parseInt(id, 10);
   try {
-    const pool = getDb();
-    const res = await pool.query(
-      `SELECT p.id, p.title, p.excerpt, p.content, p.created_at,
-              a.name as author_name, a.avatar_url as author_avatar
-       FROM posts p
-       LEFT JOIN authors a ON p.author_id = a.id
-       WHERE p.id = $1`,
-      [numId]
-    );
-    const row = res.rows[0];
+    const query = `
+      query GetPostById($id: Int!) {
+        posts(where: { id: { _eq: $id } }, limit: 1) {
+          id
+          title
+          excerpt
+          content
+          created_at
+          author_id
+        }
+        authors {
+          id
+          name
+          avatar_url
+        }
+        post_tags(where: { post_id: { _eq: $id } }) {
+          post_id
+          tag_id
+        }
+        tags {
+          id
+          name
+        }
+      }
+    `;
+    const data = await hasuraRequest(query, { id: numId });
+    const row = data?.posts?.[0];
     if (row) {
-      const tagsRes = await pool.query(
-        `SELECT t.name FROM tags t
-         JOIN post_tags pt ON t.id = pt.tag_id
-         WHERE pt.post_id = $1`,
-        [numId]
+      const authorsById = Object.fromEntries(
+        (data.authors || []).map((a) => [a.id, a])
       );
+      const tagsById = Object.fromEntries((data.tags || []).map((t) => [t.id, t.name]));
       const post = rowToPost(row);
-      post.tags = tagsRes.rows.map((r) => r.name) || ["update"];
+      const author = authorsById[row.author_id] || {};
+      post.author = {
+        name: author.name || "PhaseMatrix",
+        avatar: author.avatar_url || null,
+      };
+      post.tags =
+        (data.post_tags || []).map((link) => tagsById[link.tag_id]).filter(Boolean) || [
+          "update",
+        ];
       return post;
     }
   } catch (e) {
-    console.error("blogEntries getEntryById DB error:", e);
+    console.error("blogEntries getEntryById Hasura error:", e);
   }
   const fileData = loadFileEntries();
   const found = (fileData.entries || []).find((p) => p.id === numId);
@@ -160,15 +286,15 @@ export async function addEntry({ title = "New Post", excerpt = "", content = "" 
   try {
     return await addEntryToDb({ title, excerpt, content });
   } catch (e) {
-    console.error("blogEntries addEntry DB error:", e);
+    console.error("blogEntries addEntry Hasura error:", e);
     // On Vercel/serverless, file fallback fails (read-only filesystem) and doesn't persist.
     // Throw so the user gets a real error instead of fake "success" with no persisted post.
     if (process.env.VERCEL) {
       throw new Error(
-        `Database error: ${e.message}. Ensure DATABASE_URL is set in Vercel and init_db.sql has been run.`
+        `Hasura error: ${e.message}. Ensure HASURA_GRAPHQL_ENDPOINT and HASURA_ADMIN_SECRET are set in Vercel.`
       );
     }
-    // Local dev: fall back to file storage when DB unavailable
+    // Local dev: fall back to file storage when Hasura is unavailable
     const data = loadFileEntries();
     const { entries, nextId } = data;
     const post = {

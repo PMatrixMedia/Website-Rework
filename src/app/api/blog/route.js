@@ -1,5 +1,7 @@
 import { getEntries, addEntry } from "@/lib/blogEntries";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const posts = await getEntries();
   return Response.json({ posts });

@@ -1,7 +1,6 @@
 import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from supabase import create_client, Client
 from dotenv import load_dotenv
 from graphql import graphql_sync
 
@@ -9,21 +8,17 @@ import psycopg2
 from psycopg2 import Error
 from psycopg2.extras import RealDictCursor
 
-load_dotenv()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 app = Flask(__name__)
 _cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
 CORS(app, origins=[o.strip() for o in _cors_origins.split(",") if o.strip()])
 
-supabase: Client = create_client(
-    os.environ.get("SUPABASE_URL"),
-    os.environ.get("SUPABASE_KEY")
-)
-
 
 def get_db_connection():
     """Create and return a PostgreSQL database connection.
-    Uses DATABASE_URL if set (e.g. Supabase), otherwise falls back to individual vars.
+    Uses DATABASE_URL if set, otherwise falls back to individual vars.
     """
     try:
         database_url = os.getenv("DATABASE_URL")
@@ -192,15 +187,7 @@ def _fetch_post(post_id):
 
 @app.route("/")
 def index():
-    response = supabase.table("todos").select("*").execute()
-    todos = response.data
-
-    html = "<h1>Todos</h1><ul>"
-    for todo in todos:
-        html += f'<li>{todo["name"]}</li>'
-    html += "</ul>"
-
-    return html
+    return jsonify({"service": "blog-api", "status": "ok", "docs": "/api/health"})
 
 
 @app.route("/api/health", methods=["GET"])

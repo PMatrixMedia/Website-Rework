@@ -3,12 +3,12 @@
 import os
 import sys
 
-# Load env from backend directory
 from dotenv import load_dotenv
-load_dotenv()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 # Add backend to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, BASE_DIR)
 
 from app import _create_post
 

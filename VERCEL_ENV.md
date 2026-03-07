@@ -1,49 +1,40 @@
-# Vercel + Supabase Setup Guide
+# Vercel + Hasura + Neon Setup Guide
 
 ## Quick checklist
 
-- [ ] Supabase project exists and is **active** (not paused)
-- [ ] `DATABASE_URL` set in Vercel (Production + Preview)
-- [ ] `init_db.sql` run in Supabase SQL Editor
+- [ ] Neon project exists and is accessible
+- [ ] Hasura endpoint is reachable
+- [ ] `HASURA_GRAPHQL_ENDPOINT` set in Vercel (Production + Preview)
+- [ ] `HASURA_ADMIN_SECRET` set in Vercel (Production + Preview)
+- [ ] `init_db.sql` applied to Neon database
 - [ ] Redeploy Vercel after changing env vars
 
 ---
 
-## 1. Supabase setup
+## 1. Neon setup
 
-### Create or restore your project
+Use these Neon resources:
 
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
-2. Create a new project or select an existing one
-3. **If the project was paused** (free tier inactivity): click **Restore project**
-4. Note your **Project reference** (e.g. `abcdefghijklmnop`) from the URL or Settings
+- **Org:** `org-sweet-hat-08378913`
+- **Project:** `little-surf-12235556`
 
 ### Get the connection string
 
-1. In your project, click **Connect** (top right) or go to **Project Settings** → **Database**
-2. Under **Connection string**, choose **URI**
-3. Use one of these:
+1. Open your Neon project in [Neon Console](https://console.neon.tech/)
+2. Go to **Connection Details**
+3. Copy the **pooled** PostgreSQL connection string for your target branch (usually main)
+4. Ensure SSL is enabled in the URL (Neon URLs include this by default)
 
-**Session pooler** (recommended for Vercel – works with `pg`, supports IPv4):
-```
-postgres://postgres.[PROJECT-REF]:[YOUR-PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres
-```
+Example shape:
 
-**Transaction pooler** (alternative – use if Session fails):
+```bash
+postgresql://<user>:<password>@<endpoint>/<database>?sslmode=require
 ```
-postgres://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:6543/postgres
-```
-
-- Replace `[PROJECT-REF]` with your project reference (e.g. `vxqanrpnklukoqvrwtrs`)
-- Replace `[YOUR-PASSWORD]` with your database password
-- Replace `[REGION]` with your region (e.g. `us-east-1`)
-- **URL-encode** special characters in the password (e.g. `@` → `%40`, `#` → `%23`)
 
 ### Run the database schema
 
-1. In Supabase, go to **SQL Editor**
-2. Open `backend/init_db.sql` locally and copy its contents
-3. Paste into the SQL Editor and click **Run**
+1. Open **SQL Editor** in Neon (or run `psql` locally)
+2. Execute `backend/init_db.sql`
 4. Confirm tables `authors`, `tags`, `posts`, `post_tags` were created
 
 ---
@@ -56,7 +47,8 @@ postgres://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:6543/postgres
 
 | Name | Value | Environments |
 |------|-------|--------------|
-| `DATABASE_URL` | Your Supabase connection string (from step 1) | Production, Preview |
+| `HASURA_GRAPHQL_ENDPOINT` | `https://model-honeybee-77.hasura.app/v1/graphql` | Production, Preview |
+| `HASURA_ADMIN_SECRET` | Your Hasura admin secret | Production, Preview |
 
 4. **Redeploy** the project (Deployments → ⋮ → Redeploy) so new env vars take effect.
 
@@ -64,24 +56,23 @@ postgres://postgres:[YOUR-PASSWORD]@db.[PROJECT-REF].supabase.co:6543/postgres
 
 ## 3. Troubleshooting
 
-### `getaddrinfo ENOTFOUND db.xxx.supabase.co`
+### Connection or DNS errors
 
-- **Cause:** The Supabase project may be paused, deleted, or the project reference is wrong.
+- **Cause:** Wrong endpoint, password, or blocked outbound network.
 - **Fix:**
-  1. Check [Supabase Dashboard](https://supabase.com/dashboard) – is the project active?
-  2. If paused, click **Restore project**
-  3. Try the **Session pooler** URL (`aws-0-[REGION].pooler.supabase.com`) instead of `db.xxx.supabase.co`
-  4. Copy a fresh connection string from **Connect** in the dashboard
+  1. Verify `HASURA_GRAPHQL_ENDPOINT` exactly matches your Hasura Cloud endpoint
+  2. Confirm `HASURA_ADMIN_SECRET` is copied correctly
+  3. Test a GraphQL request from local terminal before redeploying
 
 ### `init_db.sql has been run`
 
-- Run `backend/init_db.sql` in Supabase **SQL Editor** once.
+- Run `backend/init_db.sql` against Neon once.
 - If tables already exist, the script uses `IF NOT EXISTS` and `ON CONFLICT`, so re-running is safe.
 
 ### Password / authentication errors
 
-- Regenerate the database password in **Project Settings** → **Database**
-- Ensure special characters in the password are URL-encoded in `DATABASE_URL`
+- Rotate the admin secret in Hasura and update `HASURA_ADMIN_SECRET` in Vercel
+- Confirm no extra spaces/newlines in environment variable values
 
 ---
 
