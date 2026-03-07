@@ -78,6 +78,11 @@ async function getEntriesFromDb() {
 }
 
 async function addEntryToDb({ title, excerpt, content }) {
+  if (process.env.VERCEL && !process.env.DATABASE_URL) {
+    throw new Error(
+      "DATABASE_URL is not set. Add it in Vercel → Settings → Environment Variables. See VERCEL_ENV.md."
+    );
+  }
   const pool = getDb();
   await pool.query(
     `INSERT INTO tags (name) VALUES ('update') ON CONFLICT (name) DO NOTHING`
@@ -155,24 +160,32 @@ export async function addEntry({ title = "New Post", excerpt = "", content = "" 
   try {
     return await addEntryToDb({ title, excerpt, content });
   } catch (e) {
-    console.error("blogEntries addEntry DB error, using file fallback:", e);
+    console.error("blogEntries addEntry DB error:", e);
+    // On Vercel/serverless, file fallback fails (read-only filesystem) and doesn't persist.
+    // Throw so the user gets a real error instead of fake "success" with no persisted post.
+    if (process.env.VERCEL) {
+      throw new Error(
+        `Database error: ${e.message}. Ensure DATABASE_URL is set in Vercel and init_db.sql has been run.`
+      );
+    }
+    // Local dev: fall back to file storage when DB unavailable
+    const data = loadFileEntries();
+    const { entries, nextId } = data;
+    const post = {
+      id: nextId,
+      title: title || "Untitled",
+      excerpt: excerpt || content?.slice(0, 120) || "New update",
+      content: content || excerpt,
+      date: new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }),
+      tags: ["update"],
+      author: { name: "PhaseMatrix", avatar: null },
+    };
+    entries.push(post);
+    saveFileEntries({ entries, nextId: nextId + 1 });
+    return post;
   }
-  const data = loadFileEntries();
-  const { entries, nextId } = data;
-  const post = {
-    id: nextId,
-    title: title || "Untitled",
-    excerpt: excerpt || content?.slice(0, 120) || "New update",
-    content: content || excerpt,
-    date: new Date().toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }),
-    tags: ["update"],
-    author: { name: "PhaseMatrix", avatar: null },
-  };
-  entries.push(post);
-  saveFileEntries({ entries, nextId: nextId + 1 });
-  return post;
 }
