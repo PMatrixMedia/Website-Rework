@@ -20,7 +20,7 @@ import {
   GearIcon,
   EnvelopeClosedIcon,
 } from "@radix-ui/react-icons";
-import { graphqlRequest, CREATE_POST_MUTATION } from "@/lib/graphql";
+import { createPostViaGraphql } from "@/lib/graphql";
 import "@radix-ui/themes/styles.css";
 
 const iconProps = { width: 24, height: 24 };
@@ -44,12 +44,12 @@ export default function Post() {
   const handleUpdate = async () => {
     setIsSubmitting(true);
     try {
-      const data = await graphqlRequest(CREATE_POST_MUTATION, {
+      const post = await createPostViaGraphql({
         title: title || "New Update",
         excerpt: content.slice(0, 120),
         content,
       });
-      if (data?.createPost?.success) {
+      if (post) {
         setModalError(null);
         setShowModal(true);
         setContent("");

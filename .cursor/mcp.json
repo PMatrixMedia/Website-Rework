@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "blog-mcp": {
+      "command": "python",
+      "args": ["mcp-server/server.py"],
+      "env": {
+        "HASURA_GRAPHQL_URL": "http://localhost:8080/v1/graphql",
+        "HASURA_GRAPHQL_ADMIN_SECRET": "devsecret"
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+[project]
+name = "blog-mcp-server"
+version = "0.1.0"
+description = "MCP Server for blog mutations via Hasura GraphQL"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.0.0",
+    "httpx>=0.27.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.scripts]
+blog-mcp = "server:main"

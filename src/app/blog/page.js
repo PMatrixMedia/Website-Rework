@@ -1,5 +1,5 @@
 import Blog from "../Pages/Blog/blog";
-import { graphqlRequest, POSTS_QUERY } from "@/lib/graphql";
+import { getPostsFromGraphql } from "@/lib/graphql";
 import { getEntries } from "@/lib/blogEntries";
 
 export const metadata = {
@@ -44,11 +44,8 @@ async function getPosts() {
     console.error("getPosts DB error:", e);
   }
   try {
-    const data = await graphqlRequest(POSTS_QUERY, {}, {
-      next: { revalidate: 60 },
-    });
-    const graphqlPosts = data?.posts || [];
-    if (graphqlPosts.length > 0) return graphqlPosts;
+    const graphqlPosts = await getPostsFromGraphql({ next: { revalidate: 60 } });
+    if (graphqlPosts?.length > 0) return graphqlPosts;
   } catch {
     // GraphQL fallback failed
   }

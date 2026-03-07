@@ -1,0 +1,22 @@
+# Hasura GraphQL Engine - connects to Supabase PostgreSQL
+# Run: cd hasura && docker compose up -d
+# Console: http://localhost:8080/console
+
+services:
+  graphql-engine:
+    image: hasura/graphql-engine:v2.46.0
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    environment:
+      # Supabase PostgreSQL - use for metadata and data
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: ${HASURA_GRAPHQL_METADATA_DATABASE_URL}
+      # Enable console for setup
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      # Admin secret (set in .env)
+      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET:-devsecret}
+      # CORS for Next.js
+      HASURA_GRAPHQL_CORS_DOMAIN: "http://localhost:3000,http://127.0.0.1:3000"
+    env_file:
+      - .env
