@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
+import gsap from "gsap";
 import {
   HomeIcon,
   FileTextIcon,
@@ -78,6 +79,8 @@ function parseDate(post) {
 
 export default function Blog({ posts = [] }) {
   const [sortOrder, setSortOrder] = useState("newest");
+  const gridRef = useRef(null);
+  const navRef = useRef(null);
   const postsWithAvatar = addAvatarToPosts(posts);
 
   const sortedPosts = useMemo(() => {
@@ -91,35 +94,68 @@ export default function Blog({ posts = [] }) {
     return copy;
   }, [postsWithAvatar, sortOrder]);
 
+  useEffect(() => {
+    if (!navRef.current) return;
+    const items = navRef.current.querySelectorAll(".nav-item");
+    gsap.fromTo(
+      items,
+      { opacity: 0, y: -40 },
+      { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, ease: "power2.out" }
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!gridRef.current || sortedPosts.length === 0) return;
+    const cards = gridRef.current.querySelectorAll(".blog-post-card");
+    const cols = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
+    cards.forEach((card, i) => {
+      const col = i % cols;
+      const x = cols === 1 ? 0 : col === 0 ? -60 : col === cols - 1 ? 60 : 0;
+      gsap.fromTo(
+        card,
+        { opacity: 0, x, y: 50 },
+        { opacity: 1, x: 0, y: 0, duration: 0.55, delay: i * 0.08, ease: "power2.out" }
+      );
+    });
+  }, [sortedPosts]);
+
   return (
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
         <Box className="bg-slate-800 px-4 py-3 sm:px-6 sm:py-4">
-          <Flex gap="6" align="center" wrap="wrap">
-            <Button variant="ghost" size="2" asChild>
-              <Link href="/" className="flex items-center gap-2 text-white hover:text-white">
-                <HomeIcon {...iconProps} />
-                <Text>Home</Text>
-              </Link>
-            </Button>
-            <Button variant="ghost" size="2" asChild>
-              <Link href="/blog" className="flex items-center gap-2 text-white hover:text-white">
-                <FileTextIcon {...iconProps} />
-                <Text>Blog</Text>
-              </Link>
-            </Button>
-            <Button variant="ghost" size="2" asChild>
-              <Link href="/features" className="flex items-center gap-2 text-white hover:text-white">
-                <GearIcon {...iconProps} />
-                <Text>Features</Text>
-              </Link>
-            </Button>
-            <Button variant="ghost" size="2" asChild>
-              <Link href="/contact" className="flex items-center gap-2 text-white hover:text-white">
-                <EnvelopeClosedIcon {...iconProps} />
-                <Text>Contact</Text>
-              </Link>
-            </Button>
+          <Flex ref={navRef} gap="6" align="center" wrap="wrap">
+            <span className="nav-item">
+              <Button variant="ghost" size="2" asChild>
+                <Link href="/" className="flex items-center gap-2 text-white hover:text-white">
+                  <HomeIcon {...iconProps} />
+                  <Text>Home</Text>
+                </Link>
+              </Button>
+            </span>
+            <span className="nav-item">
+              <Button variant="ghost" size="2" asChild>
+                <Link href="/blog" className="flex items-center gap-2 text-white hover:text-white">
+                  <FileTextIcon {...iconProps} />
+                  <Text>Blog</Text>
+                </Link>
+              </Button>
+            </span>
+            <span className="nav-item">
+              <Button variant="ghost" size="2" asChild>
+                <Link href="/features" className="flex items-center gap-2 text-white hover:text-white">
+                  <GearIcon {...iconProps} />
+                  <Text>Features</Text>
+                </Link>
+              </Button>
+            </span>
+            <span className="nav-item">
+              <Button variant="ghost" size="2" asChild>
+                <Link href="/contact" className="flex items-center gap-2 text-white hover:text-white">
+                  <EnvelopeClosedIcon {...iconProps} />
+                  <Text>Contact</Text>
+                </Link>
+              </Button>
+            </span>
           </Flex>
         </Box>
         <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 sm:py-12 md:py-16">
@@ -150,9 +186,13 @@ export default function Blog({ posts = [] }) {
             </Select.Root>
           </Flex>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedPosts.map((post) => (
-              <Link key={post.id} href={`/blog/${post.id}`} className="block">
+              <Link
+                key={post.id}
+                href={`/blog/${post.id}`}
+                className="block blog-post-card"
+              >
                 <BlogCard post={post} />
               </Link>
             ))}
