@@ -100,21 +100,23 @@ export default function Blog({ posts = [] }) {
     gsap.fromTo(
       items,
       { opacity: 0, y: -40 },
-      { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, ease: "power2.out" }
+      { opacity: 1, y: 0, duration: 0.5, stagger: 0.5, ease: "power2.out" }
     );
   }, []);
 
   useEffect(() => {
     if (!gridRef.current || sortedPosts.length === 0) return;
     const cards = gridRef.current.querySelectorAll(".blog-post-card");
+    const n = cards.length;
     const cols = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
+    const stagger = n > 1 ? (2 - 0.55) / (n - 1) : 0;
     cards.forEach((card, i) => {
       const col = i % cols;
       const x = cols === 1 ? 0 : col === 0 ? -60 : col === cols - 1 ? 60 : 0;
       gsap.fromTo(
         card,
         { opacity: 0, x, y: 50 },
-        { opacity: 1, x: 0, y: 0, duration: 0.55, delay: i * 0.08, ease: "power2.out" }
+        { opacity: 1, x: 0, y: 0, duration: 0.55, delay: i * stagger, ease: "power2.out" }
       );
     });
   }, [sortedPosts]);
