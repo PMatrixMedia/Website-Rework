@@ -12,7 +12,8 @@ from psycopg2.extras import RealDictCursor
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
+_cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
+CORS(app, origins=[o.strip() for o in _cors_origins.split(",") if o.strip()])
 
 supabase: Client = create_client(
     os.environ.get("SUPABASE_URL"),
@@ -95,6 +96,52 @@ def _fetch_posts():
         if conn:
             conn.close()
         return []
+
+
+def _create_post(title="New Post", excerpt="", content=""):
+    """Create a new blog post. Returns post dict or None on failure."""
+    conn = get_db_connection()
+    if not conn:
+        return None
+    try:
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute(
+            "INSERT INTO tags (name) VALUES ('update') ON CONFLICT (name) DO NOTHING"
+        )
+        cursor.execute(
+            """
+            INSERT INTO posts (title, excerpt, content, author_id)
+            VALUES (%s, %s, %s, 1)
+            RETURNING id, title, excerpt, content, created_at
+            """,
+            (title or "Untitled", excerpt or (content[:120] if content else "New update"), content or excerpt),
+        )
+        row = cursor.fetchone()
+        cursor.execute("SELECT id FROM tags WHERE name = 'update'")
+        tag_row = cursor.fetchone()
+        if tag_row:
+            cursor.execute(
+                "INSERT INTO post_tags (post_id, tag_id) VALUES (%s, %s)",
+                (row["id"], tag_row["id"]),
+            )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return {
+            "id": row["id"],
+            "title": row["title"],
+            "excerpt": row["excerpt"] or "",
+            "content": row["content"] or "",
+            "image": None,
+            "date": row["created_at"].strftime("%b %d, %Y") if row["created_at"] else "",
+            "author": {"name": "PhaseMatrix", "avatar": None},
+            "tags": ["update"],
+        }
+    except (Error, Exception):
+        if conn:
+            conn.rollback()
+            conn.close()
+        return None
 
 
 def _fetch_post(post_id):

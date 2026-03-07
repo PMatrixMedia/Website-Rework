@@ -1,6 +1,6 @@
 """GraphQL schema for blog API."""
 import graphene
-from graphene import ObjectType, Field, String, Int, List
+from graphene import ObjectType, Field, String, Int, List, Mutation
 
 
 class AuthorType(ObjectType):
@@ -19,6 +19,23 @@ class PostType(ObjectType):
     tags = List(String)
 
 
+class CreatePost(Mutation):
+    class Arguments:
+        title = String(default_value="New Post")
+        excerpt = String(default_value="")
+        content = String(default_value="")
+
+    post = Field(PostType)
+    success = graphene.Boolean()
+
+    def mutate(self, info, title="New Post", excerpt="", content=""):
+        from app import _create_post
+        post = _create_post(title=title, excerpt=excerpt, content=content)
+        if post is None:
+            raise Exception("Failed to create post")
+        return CreatePost(post=post, success=True)
+
+
 class Query(ObjectType):
     posts = graphene.List(PostType)
     post = Field(PostType, id=graphene.Int(required=True))
@@ -32,4 +49,8 @@ class Query(ObjectType):
         return _fetch_post(id)
 
 
-schema = graphene.Schema(query=Query)
+class Mutation(ObjectType):
+    create_post = CreatePost.Field()
+
+
+schema = graphene.Schema(query=Query, mutation=Mutation)

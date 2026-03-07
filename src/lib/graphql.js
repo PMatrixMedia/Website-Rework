@@ -63,3 +63,20 @@ export const POST_QUERY = `
     }
   }
 `;
+
+export const CREATE_POST_MUTATION = `
+  mutation CreatePost($title: String, $excerpt: String, $content: String) {
+    createPost(title: $title, excerpt: $excerpt, content: $content) {
+      success
+      post {
+        id
+        title
+        excerpt
+        content
+        date
+        author { name avatar }
+        tags
+      }
+    }
+  }
+`;

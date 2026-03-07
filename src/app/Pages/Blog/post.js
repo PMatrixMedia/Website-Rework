@@ -20,6 +20,7 @@ import {
   GearIcon,
   EnvelopeClosedIcon,
 } from "@radix-ui/react-icons";
+import { graphqlRequest, CREATE_POST_MUTATION } from "@/lib/graphql";
 import "@radix-ui/themes/styles.css";
 
 const iconProps = { width: 24, height: 24 };
@@ -43,23 +44,18 @@ export default function Post() {
   const handleUpdate = async () => {
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/blog", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: title || "New Update",
-          excerpt: content.slice(0, 120),
-          content,
-        }),
+      const data = await graphqlRequest(CREATE_POST_MUTATION, {
+        title: title || "New Update",
+        excerpt: content.slice(0, 120),
+        content,
       });
-      if (res.ok) {
+      if (data?.createPost?.success) {
         setModalError(null);
         setShowModal(true);
         setContent("");
         setTitle("");
       } else {
-        const data = await res.json().catch(() => ({}));
-        setModalError(data.error || "Failed to save post");
+        setModalError("Failed to save post");
         setShowModal(true);
       }
     } catch (err) {
