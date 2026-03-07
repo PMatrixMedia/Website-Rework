@@ -1,6 +1,7 @@
 import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from supabase import create_client, Client
 from dotenv import load_dotenv
 from graphql import graphql_sync
 
@@ -12,6 +13,11 @@ load_dotenv()
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
+
+supabase: Client = create_client(
+    os.environ.get("SUPABASE_URL"),
+    os.environ.get("SUPABASE_KEY")
+)
 
 
 def get_db_connection():
@@ -135,6 +141,19 @@ def _fetch_post(post_id):
         if conn:
             conn.close()
         return None
+
+
+@app.route("/")
+def index():
+    response = supabase.table("todos").select("*").execute()
+    todos = response.data
+
+    html = "<h1>Todos</h1><ul>"
+    for todo in todos:
+        html += f'<li>{todo["name"]}</li>'
+    html += "</ul>"
+
+    return html
 
 
 @app.route("/api/health", methods=["GET"])
