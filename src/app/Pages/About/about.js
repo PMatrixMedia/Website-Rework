@@ -113,10 +113,10 @@ export default function About() {
             items="center"
             ref={navRef}
             justify="between"
-            wrap="wrap"
+            wrap="nowrap"
             className="w-full "
           >
-            <div>
+            <div className="hover:scale-120,ml-4, transition-opacity, hover:opacity-80">
             <Link
               href="/"
               aria-label="Home"
@@ -125,14 +125,14 @@ export default function About() {
               <HomeIcon />
             </Link>
             </div>
-            <div className="flex gap-5">
-              <span>
+            <div className="flex gap-5" >
+              <div className="hover:scale-120">
               <a
                 href="https://github.com/PMatrixMedia"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="transition-opacity hover:opacity-80"
+                className="transition-opacity hover:opacity-80 hover:scale-120"
               >
                 <Image
                   src="/Images/github.png"
@@ -142,14 +142,14 @@ export default function About() {
                   style={{ filter: "brightness(0) invert(1)" }}
                 />
               </a>
-              </span>
-              <span>
+              </div>
+              <div className="hover:scale-120">
               <a
                 href="https://www.linkedin.com/in/christopher-faison-1b7b6948"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="transition-opacity hover:opacity-80"
+                className="transition-opacity hover:opacity-80 hover:scale-120"
               >
                 <Image
                   src="/Images/linkedin.png"
@@ -158,23 +158,24 @@ export default function About() {
                   height={38}
                 />
               </a>
-              </span>
-              <span>
+              </div>
+              <div className="hover:scale-120">
               <a
                 href="https://codesandbox.io/u/PMatrixMedia"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="CodeSandbox"
-                className="transition-opacity hover:opacity-80"
+                className="transition-opacity hover:opacity-80 hover:scale-120"
               >
                 <Image
                   src="/Images/codesandbox-logo.png"
                   alt="CodeSandbox"
                   width={187}
                   height={50}
+    
                 />
               </a>
-              </span>
+              </div>
             </div>
         </Flex>
       </div>
