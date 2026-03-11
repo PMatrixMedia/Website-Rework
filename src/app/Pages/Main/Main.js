@@ -77,27 +77,27 @@ export default function PhaseMain() {
     >
      <Box py="4"
      style={{backgroundColor: "gray"}}> 
-        <Flex ref={navRef} gap="3" align="center" wrap="wrap" className="sm:gap-6 px-4 sm:px-6">
-          <span className="nav-item">
+        <Flex ref={navRef} gap="5" align="center" wrap="wrap" className="sm:gap-6 px-4 sm:px-6">
+          <div className="nav-item hover:scale-120">
             <NavButton href="/" icon={HomeIcon}>
               <Text size="6"><Strong>Home</Strong></Text>
             </NavButton>
-          </span>
-          <span className="nav-item">
+          </div>
+          <div className="nav-item hover:scale-120">
             <NavButton href="/blog" icon={FileTextIcon}>
               <Text size="6"><Strong>Blog</Strong></Text>
             </NavButton>
-          </span>
-          <span className="nav-item">
+          </div>
+          <div className="nav-item hover:scale-120">
             <NavButton href="/features" icon={GearIcon}>
               <Text size="6"><Strong>Features</Strong></Text>
             </NavButton>
-          </span>
-          <span className="nav-item">
+          </div>
+          <div className="nav-item hover:scale-120">
             <NavButton href="/contact" icon={EnvelopeClosedIcon}>
               <Text size="6"><Strong>Contact</Strong></Text>
             </NavButton>
-          </span>
+          </div>
         </Flex>
         </Box>
         <Box align="left" justify="left">
