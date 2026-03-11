@@ -22,6 +22,7 @@ export default {
       fontFamily: {
         geist: ["var(--font-geist-sans)", "system-ui", "sans-serif"],
         geistMono: ["var(--font-geist-mono)", "monospace"],
+        // Nabla Google font – loaded in layout.js via next/font/google (--font-nabla)
         nabla: ["var(--font-nabla)", "Nabla", "system-ui"],
       },
       maxWidth: {

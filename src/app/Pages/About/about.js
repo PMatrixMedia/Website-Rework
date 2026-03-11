@@ -99,26 +99,24 @@ export default function About() {
 
   return (
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
-      <Box py="3"
-             style={{backgroundColor: "gray"}}>
-        <Container size="3">
-          <Box className="flex justify-center" align="center">
+      <Box py="0"
+             style={{backgroundColor: "gray", justifyContent: "center", items: "center", justifyItems: "center"}}>
             <Heading as="h3" ref={headingRef}>
               About Me
             </Heading>
-          </Box>
-        </Container>
       </Box>
 
       {/* Nav: Home left, other icons right */}
-      <Box style={{ backgroundColor: "gray" }}>
+      <div style={{ backgroundColor: "gray", px:-4}}>
           <Flex
+            justifyItems="center"
+            items="center"
             ref={navRef}
-            align="center"
             justify="between"
-            wrap="nowrap"
-            className="w-full py-3"
+            wrap="wrap"
+            className="w-full "
           >
+            <div>
             <Link
               href="/"
               aria-label="Home"
@@ -126,7 +124,9 @@ export default function About() {
             >
               <HomeIcon />
             </Link>
-            <Flex gap="3" align="center" wrap="nowrap" className="shrink-0 gap-4 sm:gap-6">
+            </div>
+            <div className="flex gap-5">
+              <span>
               <a
                 href="https://github.com/PMatrixMedia"
                 target="_blank"
@@ -142,6 +142,8 @@ export default function About() {
                   style={{ filter: "brightness(0) invert(1)" }}
                 />
               </a>
+              </span>
+              <span>
               <a
                 href="https://www.linkedin.com/in/christopher-faison-1b7b6948"
                 target="_blank"
@@ -156,6 +158,8 @@ export default function About() {
                   height={38}
                 />
               </a>
+              </span>
+              <span>
               <a
                 href="https://codesandbox.io/u/PMatrixMedia"
                 target="_blank"
@@ -170,9 +174,10 @@ export default function About() {
                   height={50}
                 />
               </a>
-            </Flex>
-          </Flex>
-      </Box>
+              </span>
+            </div>
+        </Flex>
+      </div>
 
       {/* Avatar card right above the paragraph */}
       <Box className="bg-black pt-6 pl-10 ml-8" width="829" height="200px" >
