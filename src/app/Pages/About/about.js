@@ -107,7 +107,7 @@ export default function About() {
       </Box>
 
       {/* Nav: Home left, other icons right */}
-      <div style={{ backgroundColor: "gray", px:-4}}>
+      <div style={{ backgroundColor: "gray", py:-4}}>
           <Flex
             justifyItems="center"
             items="center"
