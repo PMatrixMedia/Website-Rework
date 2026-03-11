@@ -45,7 +45,7 @@ const RSnavbar = () => {
   return (
     <div>
       <style>{GlobalStyles}</style>
-      <Navbar color="secondary" dark expand="md">
+      <Navbar color="secondary" dark expand="md" className="bg-slate-800">
         <NavbarBrand href="/">PhaseMatrixMedia</NavbarBrand>
         <NavbarToggler onClick={toggle} />
         {/* 3. The 'isOpen' state variable is used directly here. */}

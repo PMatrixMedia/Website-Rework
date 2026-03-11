@@ -101,32 +101,38 @@ export default function About() {
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
       <Box py="3"
              style={{backgroundColor: "gray"}}>
-        <Container size="3">        {/* Top Header Bar - Thin, dark grey, "About Me" uppercase */}
-        <Box align="center" jusyify="center">
-          <Heading as="h3" ref={headingRef}>
-            About Me
-          </Heading>
-        </Box>
-         </Container>
-         </Box>    {/* Profile & Navigation Section - Lighter grey */}
-              <Box align="right" justify="right"
-              style={{backgroundColor: "gray"}}>
-                <Container align="right" justify="right">
-            <Flex ref={navRef} gap="3" justify="end" align="center" wrap="wrap" className="py-3 sm:gap-6 px-4 sm:px-0">
-            {/* Right: Icons */}
-              <Link
-                href="/"
-                aria-label="Home"
-                className="hover:opacity-80 transition-opacity"
-              >
-                <HomeIcon />
-              </Link>
+        <Container size="3">
+          <Box className="flex justify-center" align="center">
+            <Heading as="h3" ref={headingRef}>
+              About Me
+            </Heading>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* Nav: Home left, other icons right */}
+      <Box style={{ backgroundColor: "gray" }}>
+          <Flex
+            ref={navRef}
+            align="center"
+            justify="between"
+            wrap="nowrap"
+            className="w-full py-3"
+          >
+            <Link
+              href="/"
+              aria-label="Home"
+              className="shrink-0 transition-opacity hover:opacity-80 [&_svg]:text-white"
+            >
+              <HomeIcon />
+            </Link>
+            <Flex gap="3" align="center" wrap="nowrap" className="shrink-0 gap-4 sm:gap-6">
               <a
                 href="https://github.com/PMatrixMedia"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="hover:opacity-80 transition-opacity"
+                className="transition-opacity hover:opacity-80"
               >
                 <Image
                   src="/Images/github.png"
@@ -141,7 +147,7 @@ export default function About() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="hover:opacity-80 transition-opacity"
+                className="transition-opacity hover:opacity-80"
               >
                 <Image
                   src="/Images/linkedin.png"
@@ -155,7 +161,7 @@ export default function About() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="CodeSandbox"
-                className="hover:opacity-80 transition-opacity"
+                className="transition-opacity hover:opacity-80"
               >
                 <Image
                   src="/Images/codesandbox-logo.png"
@@ -165,32 +171,33 @@ export default function About() {
                 />
               </a>
             </Flex>
-            </Container>
-            </Box>
-        {/* Card - center left, right above paragraph */}
-        <Box className="pt-6 pb-2 px-8">
-          <Container size="3" className="max-w-[1000px] mx-auto">
-            <Flex justify="start">
-              <Card ref={cardRef} className="max-w-fit">
-                <Flex align="center" gap="4">
-                  <Avatar
-                    src={avatarImg.src}
-                    alt="Profile"
-                    size="9"
-                    fallback="?"
-                    radius="full"
-                    className="border-2 border-white/20"
-                  />
-                  <Box>
-                    <Text size="6"><Strong>Your WebMaster</Strong></Text>
-                  </Box>
-                </Flex>
-              </Card>
-            </Flex>
-          </Container>
-        </Box>
-        {/* Main Content - Black, white text with leading > */}
-        <Box className="bg-black py-12 px-8 min-h-[50vh]">
+          </Flex>
+      </Box>
+
+      {/* Avatar card right above the paragraph */}
+      <Box className="bg-black pt-6 pl-10 ml-8" width="829" height="200px" >
+          <Flex justify="left" ml="24%"className="pl-10">
+            <Card ref={cardRef} className="max-w-fit">
+              <Flex align="center" justify="center" gap="4">
+                <Avatar
+                  src={avatarImg.src}
+                  alt="Profile"
+                  size="9"
+                  fallback="?"
+                  radius="full"
+                  className="border-2 border-white/20"
+                />
+                <Box>
+                  <Text size="6"><Strong>Your WebMaster</Strong></Text>
+                </Box>
+              </Flex>
+            </Card>
+          </Flex>
+      </Box>
+
+      {/* Main content - first paragraph */}
+      <Box className="relative bg-black py-8 px-6 min-h-[50vh] sm:px-8">
+        <Flex justify="center">
           <Container size="3" className="max-w-[1000px]">
             <Blockquote ref={blockquoteRef} size="7">
               {words.map((word, i) => (
@@ -204,8 +211,8 @@ export default function About() {
               ))}
             </Blockquote>
           </Container>
-        </Box>
-
+        </Flex>
+      </Box>
     </Theme>
   );
 };

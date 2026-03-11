@@ -358,7 +358,7 @@ const SphereScene = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="sphere-canvas"
+      className="w-full max-w-[1400px] h-[40vh] min-h-[220px] sm:h-[45vh] sm:min-h-[280px] md:min-h-[320px] lg:h-[50vh] lg:min-h-[360px] xl:min-h-[400px] 2xl:min-h-[500px] touch-none outline-none"
     />
   );
 };
