@@ -109,7 +109,6 @@ export default function About() {
       {/* Nav: Home left, other icons right */}
       <div style={{ backgroundColor: "gray", py:-4}}>
           <Flex
-            justifyItems="center"
             items="center"
             ref={navRef}
             justify="between"
