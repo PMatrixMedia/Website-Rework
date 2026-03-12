@@ -108,6 +108,17 @@ export const HASURA_CREATE_POST_MUTATION = `
   }
 `;
 
+export const HASURA_INSERT_CONTACT_MUTATION = `
+  mutation InsertContactSubmission($name: String, $email: String!, $message: String!) {
+    insert_contact_submissions_one(
+      object: { name: $name, email: $email, message: $message }
+    ) {
+      id
+      created_at
+    }
+  }
+`;
+
 // Legacy Flask/Graphene schema
 export const POSTS_QUERY = `
   query GetPosts {

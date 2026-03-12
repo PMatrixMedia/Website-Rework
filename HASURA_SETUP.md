@@ -28,6 +28,29 @@ docker compose up -d
 - **URL:** http://localhost:8080/v1/graphql
 - **Header:** `x-hasura-admin-secret: devsecret`
 
+### Contact form
+
+1. Add the `contact_submissions` table (see `backend/init_db.sql` – run the `CREATE TABLE contact_submissions ...` block on your database if you already ran init previously).
+2. In Hasura Console: **Data** → track the `contact_submissions` table.
+3. **Event Trigger (email to info@phasematrixmedia.com):**
+   - **Events** → **Create Trigger**.
+   - **Trigger name:** `contact_form_email`
+   - **Schema / Table:** `public` / `contact_submissions`
+   - **Webhook URL:** your app’s full URL + path, e.g. `https://your-app.vercel.app/api/webhooks/hasura/contact`  
+     (For local dev, use a tunnel like [ngrok](https://ngrok.com): `ngrok http 3000` then use the HTTPS URL + `/api/webhooks/hasura/contact`.)
+   - **Insert:** enable, leave columns as * (all).
+   - Create the trigger.
+
+   **Or** apply via Metadata API (replace `REPLACE_WITH_YOUR_APP_URL` in `hasura/event_triggers/contact_form_email.json`, then):
+   ```bash
+   curl -X POST http://localhost:8080/v1/metadata \
+     -H "Content-Type: application/json" \
+     -H "x-hasura-admin-secret: devsecret" \
+     -d @hasura/event_triggers/contact_form_email.json
+   ```
+
+   When a row is inserted into `contact_submissions`, Hasura POSTs the event to the webhook; the Next.js route at `/api/webhooks/hasura/contact` sends the email via Resend. Set `RESEND_API_KEY` (and optionally `CONTACT_FROM_EMAIL`) in your Next.js app env (e.g. Vercel).
+
 ## 2. Python MCP Server
 
 ### Install

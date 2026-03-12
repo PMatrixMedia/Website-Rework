@@ -63,3 +63,12 @@ INSERT INTO posts (title, excerpt, content, author_id, image_url) VALUES
 INSERT INTO post_tags (post_id, tag_id) SELECT 1, id FROM tags WHERE name IN ('welcome', 'updates');
 INSERT INTO post_tags (post_id, tag_id) SELECT 2, id FROM tags WHERE name IN ('design', 'news');
 INSERT INTO post_tags (post_id, tag_id) SELECT 3, id FROM tags WHERE name IN ('features', 'roadmap');
+
+-- Contact form submissions (for Hasura; optionally add Event Trigger to email info@phasematrixmedia.com)
+CREATE TABLE IF NOT EXISTS contact_submissions (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255),
+    email VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

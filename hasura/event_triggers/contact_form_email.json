@@ -1,0 +1,12 @@
+{
+  "type": "pg_create_event_trigger",
+  "args": {
+    "name": "contact_form_email",
+    "table": { "name": "contact_submissions", "schema": "public" },
+    "source": "default",
+    "webhook": "https://model-honeybee-77.hasura.app/v1/graphql/webhooks/hasura/contact",
+    "insert": {
+      "columns": "*"
+    }
+  }
+}

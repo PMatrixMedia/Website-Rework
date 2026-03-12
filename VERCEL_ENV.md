@@ -49,6 +49,7 @@ postgresql://<user>:<password>@<endpoint>/<database>?sslmode=require
 |------|-------|--------------|
 | `HASURA_GRAPHQL_ENDPOINT` | `https://model-honeybee-77.hasura.app/v1/graphql` | Production, Preview |
 | `HASURA_ADMIN_SECRET` | Your Hasura admin secret | Production, Preview |
+| `RESEND_API_KEY` | Your Resend API key (for contact form → info@phasematrixmedia.com) | Production, Preview |
 
 4. **Redeploy** the project (Deployments → ⋮ → Redeploy) so new env vars take effect.
 
@@ -80,5 +81,6 @@ postgresql://<user>:<password>@<endpoint>/<database>?sslmode=require
 
 | Name | Value |
 |------|-------|
+| `CONTACT_FROM_EMAIL` | Custom "from" for contact emails (e.g. `PhaseMatrix <contact@yourdomain.com>`); must be a verified domain in Resend. If unset, uses Resend’s onboarding sender. |
 | `NEXT_PUBLIC_API_URL` | Your Flask backend URL (if deployed) |
 | `NEXT_PUBLIC_GRAPHQL_URL` | GraphQL endpoint URL |
