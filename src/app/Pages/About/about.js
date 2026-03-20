@@ -124,7 +124,7 @@ export default function About() {
               <HomeIcon />
             </Link>
             </div>
-            <div className="flex gap-5" >
+            <div className="flex gap-7" >
               <div className="hover:scale-120">
               <a
                 href="https://github.com/PMatrixMedia"
