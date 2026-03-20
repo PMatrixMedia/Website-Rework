@@ -94,30 +94,30 @@ export default function Post() {
   };
 
   return (
-    <Theme appearance="dark" accentColor="gray" grayColor="slate">
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-        <Box className="bg-slate-800 px-4 py-3 sm:px-6 sm:py-4">
+    <Theme appearance="inherit" accentColor="gray" grayColor="slate">
+      <div className="min-h-screen bg-(--background) text-(--foreground)">
+        <Box className="border-b border-black/10 bg-black/5 px-4 py-3 dark:border-white/10 dark:bg-white/5 sm:px-6 sm:py-4">
           <Flex gap="6" align="center" wrap="wrap">
             <Button variant="ghost" size="2" asChild>
-              <Link href="/" className="flex items-center gap-2 text-white hover:text-white">
+              <Link href="/" className="flex items-center gap-2">
                 <HomeIcon {...iconProps} />
                 <Text>Home</Text>
               </Link>
             </Button>
             <Button variant="ghost" size="2" asChild>
-              <Link href="/blog" className="flex items-center gap-2 text-white hover:text-white">
+              <Link href="/blog" className="flex items-center gap-2">
                 <FileTextIcon {...iconProps} />
                 <Text>Blog</Text>
               </Link>
             </Button>
             <Button variant="ghost" size="2" asChild>
-              <Link href="/features" className="flex items-center gap-2 text-white hover:text-white">
+              <Link href="/features" className="flex items-center gap-2">
                 <GearIcon {...iconProps} />
                 <Text>Features</Text>
               </Link>
             </Button>
             <Button variant="ghost" size="2" asChild>
-              <Link href="/contact" className="flex items-center gap-2 text-white hover:text-white">
+              <Link href="/contact" className="flex items-center gap-2">
                 <EnvelopeClosedIcon {...iconProps} />
                 <Text>Contact</Text>
               </Link>
@@ -128,20 +128,20 @@ export default function Post() {
         <div className="max-w-3xl mx-auto px-4 py-12 sm:px-6">
           <Link
             href="/blog"
-            className="text-slate-400 hover:text-white transition-colors text-sm flex items-center gap-2 mb-6"
+            className="text-sm flex items-center gap-2 mb-6 opacity-70 hover:opacity-100 transition-opacity"
           >
             <FileTextIcon {...iconProps} />
             ← Back to Blog
           </Link>
 
-          <Heading size="8" weight="bold" className="text-white mb-6">
+          <Heading size="8" weight="bold" className="mb-6">
             New Blog Entry
           </Heading>
 
           <Card size="3" className="p-8 min-h-[420px]">
             <Flex direction="column" gap="4">
               <Box>
-                <Text as="label" size="2" weight="medium" className="text-slate-300 block mb-2">
+                <Text as="label" size="2" weight="medium" className="block mb-2 opacity-80">
                   Title
                 </Text>
                 <TextField.Root
@@ -153,14 +153,14 @@ export default function Post() {
                 />
               </Box>
               <Box>
-                <Text as="label" size="2" weight="medium" className="text-slate-300 block mb-2">
+                <Text as="label" size="2" weight="medium" className="block mb-2 opacity-80">
                   Content
                 </Text>
                 <textarea
                   placeholder="Write your update here..."
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="w-full min-h-[320px] px-3 py-3 rounded-md bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500 resize-y"
+                  className="w-full min-h-[320px] px-3 py-3 rounded-md bg-black/10 dark:bg-white/5 border border-black/15 dark:border-white/15 text-(--foreground) placeholder:opacity-50 focus:outline-none focus:ring-2 focus:ring-black/30 dark:focus:ring-white/30 resize-y"
                   rows={14}
                 />
               </Box>

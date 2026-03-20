@@ -12,6 +12,11 @@ function getHasuraConfig() {
   };
 }
 
+function canUseHasura() {
+  const { endpoint, adminSecret } = getHasuraConfig();
+  return Boolean(endpoint && adminSecret);
+}
+
 async function hasuraRequest(query, variables = {}) {
   const { endpoint, adminSecret } = getHasuraConfig();
   if (!adminSecret) {
@@ -218,6 +223,10 @@ async function addEntryToDb({ title, excerpt, content }) {
 }
 
 export async function getEntries() {
+  if (!canUseHasura()) {
+    const fileData = loadFileEntries();
+    return [...(fileData.entries || [])];
+  }
   try {
     return await getEntriesFromDb();
   } catch (e) {
@@ -229,6 +238,11 @@ export async function getEntries() {
 
 export async function getEntryById(id) {
   const numId = parseInt(id, 10);
+  if (!canUseHasura()) {
+    const fileData = loadFileEntries();
+    const found = (fileData.entries || []).find((p) => p.id === numId);
+    return found || null;
+  }
   try {
     const query = `
       query GetPostById($id: Int!) {
@@ -283,6 +297,26 @@ export async function getEntryById(id) {
 }
 
 export async function addEntry({ title = "New Post", excerpt = "", content = "" }) {
+  if (!canUseHasura()) {
+    const data = loadFileEntries();
+    const { entries, nextId } = data;
+    const post = {
+      id: nextId,
+      title: title || "Untitled",
+      excerpt: excerpt || content?.slice(0, 120) || "New update",
+      content: content || excerpt,
+      date: new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }),
+      tags: ["update"],
+      author: { name: "PhaseMatrix", avatar: null },
+    };
+    entries.push(post);
+    saveFileEntries({ entries, nextId: nextId + 1 });
+    return post;
+  }
   try {
     return await addEntryToDb({ title, excerpt, content });
   } catch (e) {

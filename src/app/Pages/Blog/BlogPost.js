@@ -6,11 +6,11 @@ import "@radix-ui/themes/styles.css";
 export default function BlogPost({ post }) {
   if (!post) {
     return (
-      <Theme appearance="dark" accentColor="gray" grayColor="slate">
-        <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+      <Theme appearance="inherit" accentColor="gray" grayColor="slate">
+        <div className="min-h-screen bg-(--background) text-(--foreground) flex items-center justify-center">
           <Box className="text-center">
-            <Heading size="6" className="text-white mb-4">Post not found</Heading>
-            <Link href="/blog" className="text-slate-400 hover:text-white">
+            <Heading size="6" className="mb-4">Post not found</Heading>
+            <Link href="/blog" className="opacity-70 hover:opacity-100">
               ← Back to Blog
             </Link>
           </Box>
@@ -20,10 +20,10 @@ export default function BlogPost({ post }) {
   }
 
   return (
-    <Theme appearance="dark" accentColor="gray" grayColor="slate">
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+    <Theme appearance="inherit" accentColor="gray" grayColor="slate">
+      <div className="min-h-screen bg-(--background) text-(--foreground)">
         <article className="max-w-3xl mx-auto px-6 py-16">
-          <Link href="/blog" className="text-slate-400 hover:text-white transition-colors text-sm mb-6 block">
+          <Link href="/blog" className="text-sm mb-6 block opacity-70 hover:opacity-100 transition-opacity">
             ← Back to Blog
           </Link>
 
@@ -41,7 +41,7 @@ export default function BlogPost({ post }) {
             ))}
           </Flex>
 
-          <Heading size="8" weight="bold" className="text-white mb-4">
+          <Heading size="8" weight="bold" className="mb-4">
             {post.title}
           </Heading>
 
@@ -58,7 +58,7 @@ export default function BlogPost({ post }) {
           </Flex>
 
           <div
-            className="prose prose-invert prose-slate max-w-none text-slate-300 leading-relaxed"
+            className="prose max-w-none leading-relaxed dark:prose-invert"
             dangerouslySetInnerHTML={{ __html: post.content?.replace(/\n/g, "<br />") || post.excerpt }}
           />
         </article>

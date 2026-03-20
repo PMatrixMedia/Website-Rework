@@ -17,7 +17,7 @@ const iconProps = { width: 24, height: 24 };
 
 const BlogCard = ({ post }) => (
   <Card size="2" className="overflow-hidden transition-all hover:shadow-xl hover:shadow-slate-500/10 hover:-translate-y-0.5">
-    <Box className="aspect-[2/1] bg-gradient-to-br from-slate-700 to-slate-900 overflow-hidden">
+    <Box className="aspect-2/1 bg-linear-to-br from-slate-700 to-slate-900 overflow-hidden">
       {post.image ? (
         <img
           src={post.image}
@@ -122,13 +122,13 @@ export default function Blog({ posts = [] }) {
   }, [sortedPosts]);
 
   return (
-    <Theme appearance="dark" accentColor="gray" grayColor="slate">
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-        <Box className="bg-slate-800 px-4 py-3 sm:px-6 sm:py-4">
+    <Theme appearance="inherit" accentColor="gray" grayColor="slate">
+      <div className="min-h-screen bg-(--background) text-(--foreground)">
+        <Box className="border-b border-black/10 bg-black/5 px-4 py-3 dark:border-white/10 dark:bg-white/5 sm:px-6 sm:py-4">
           <Flex ref={navRef} gap="6" align="center" wrap="wrap">
             <span className="nav-item">
               <Button variant="ghost" size="2" asChild>
-                <Link href="/" className="flex items-center gap-2 text-white hover:text-white">
+                <Link href="/" className="flex items-center gap-2">
                   <HomeIcon {...iconProps} />
                   <Text>Home</Text>
                 </Link>
@@ -136,7 +136,7 @@ export default function Blog({ posts = [] }) {
             </span>
             <span className="nav-item">
               <Button variant="ghost" size="2" asChild>
-                <Link href="/blog" className="flex items-center gap-2 text-white hover:text-white">
+                <Link href="/blog" className="flex items-center gap-2">
                   <FileTextIcon {...iconProps} />
                   <Text>Blog</Text>
                 </Link>
@@ -144,7 +144,7 @@ export default function Blog({ posts = [] }) {
             </span>
             <span className="nav-item">
               <Button variant="ghost" size="2" asChild>
-                <Link href="/features" className="flex items-center gap-2 text-white hover:text-white">
+                <Link href="/features" className="flex items-center gap-2">
                   <GearIcon {...iconProps} />
                   <Text>Features</Text>
                 </Link>
@@ -152,7 +152,7 @@ export default function Blog({ posts = [] }) {
             </span>
             <span className="nav-item">
               <Button variant="ghost" size="2" asChild>
-                <Link href="/contact" className="flex items-center gap-2 text-white hover:text-white">
+                <Link href="/contact" className="flex items-center gap-2">
                   <EnvelopeClosedIcon {...iconProps} />
                   <Text>Contact</Text>
                 </Link>
@@ -162,12 +162,12 @@ export default function Blog({ posts = [] }) {
         </Box>
         <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 sm:py-12 md:py-16">
           <Flex direction="column" gap="6" mb="8">
-            <Link href="/main" className="text-slate-400 hover:text-white transition-colors text-sm flex items-center gap-2">
+            <Link href="/main" className="text-sm flex items-center gap-2 opacity-70 hover:opacity-100 transition-opacity">
               <HomeIcon {...iconProps} />
               ← Back to Main
             </Link>
             <Box>
-              <Heading size="8" weight="bold" className="text-white">
+              <Heading size="8" weight="bold">
                 Blog & Updates
               </Heading>
               <Text size="3" color="gray">
