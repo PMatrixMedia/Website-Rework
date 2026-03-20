@@ -176,6 +176,17 @@ const SphereScene = () => {
     let rotationStartTime = 0;
     let pauseStartTime = 0;
     let state = "paused"; // "rotating" | "paused"
+    let orbitBaseAngle = 0;
+    let cycleStartAngle = 0;
+    let cycleTargetAngle = 0;
+
+    function beginRotation(now) {
+      state = "rotating";
+      rotationStartTime = now;
+      cycleStartAngle = orbitBaseAngle;
+      // Always do one full turn, then add a random phase so stop positions vary.
+      cycleTargetAngle = orbitBaseAngle + 2 * Math.PI + Math.random() * 2 * Math.PI;
+    }
 
     SPHERE_CONFIG.forEach((config, index) => {
       // Initial position: sphere 0 at front (angle 0), 1 at 120°, 2 at 240°
@@ -306,8 +317,7 @@ const SphereScene = () => {
 
       if (state === "paused") {
         if (now - pauseStartTime >= PAUSE_DURATION_MS) {
-          state = "rotating";
-          rotationStartTime = now;
+          beginRotation(now);
         }
         return;
       }
@@ -316,11 +326,13 @@ const SphereScene = () => {
       const t = Math.min(elapsed / ROTATION_DURATION_MS, 1);
 
       if (t >= 1) {
-        // Revolution complete - snap to final positions and pause
+        // Revolution complete - snap to randomized final positions and pause
+        orbitBaseAngle = cycleTargetAngle % (2 * Math.PI);
         spheres.forEach((sphere, index) => {
           const angleOffset = (index * 2 * Math.PI) / 3;
-          sphere.position.x = ORBIT_RADIUS * Math.sin(angleOffset);
-          sphere.position.z = ORBIT_RADIUS * Math.cos(angleOffset);
+          const finalAngle = orbitBaseAngle + angleOffset;
+          sphere.position.x = ORBIT_RADIUS * Math.sin(finalAngle);
+          sphere.position.z = ORBIT_RADIUS * Math.cos(finalAngle);
         });
         state = "paused";
         pauseStartTime = now;
@@ -328,7 +340,7 @@ const SphereScene = () => {
       }
 
       const easedT = cubicEaseInOut(t);
-      const angle = easedT * 2 * Math.PI;
+      const angle = cycleStartAngle + (cycleTargetAngle - cycleStartAngle) * easedT;
 
       spheres.forEach((sphere, index) => {
         const angleOffset = (index * 2 * Math.PI) / 3;
@@ -338,9 +350,8 @@ const SphereScene = () => {
       });
     });
 
-    // Start first rotation after brief delay
-    state = "rotating";
-    rotationStartTime = performance.now();
+    // Start first rotation immediately.
+    beginRotation(performance.now());
 
     const handleResize = () => engine.resize();
     window.addEventListener("resize", handleResize);
