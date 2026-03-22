@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
+import gsap from "gsap";
 import * as Cesium from "cesium";
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
@@ -33,8 +34,29 @@ function NavButton({ href, icon: Icon, children }) {
 }
 
 export default function GlobalMappingPage() {
+  const viewerWrapRef = useRef(null);
   const viewerContainerRef = useRef(null);
   const viewerRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const wrap = viewerWrapRef.current;
+    if (!wrap) return;
+
+    const ctx = gsap.context(() => {
+      // Start top-right (above + off to the right); settle centered with vertical + horizontal bounce
+      gsap.set(wrap, { x: "110%", y: "-115%", opacity: 0.6 });
+      gsap.to(wrap, {
+        x: 0,
+        y: 0,
+        opacity: 1,
+        duration: 2.5,
+        ease: "bounce.out",
+        delay: 0.12,
+      });
+    }, wrap);
+
+    return () => ctx.revert();
+  }, []);
 
   useEffect(() => {
     const container = viewerContainerRef.current;
@@ -222,15 +244,20 @@ export default function GlobalMappingPage() {
         </Flex>
       </Box>
 
-      <Container size="4" className="mx-auto max-w-6xl px-4 py-8">
+      <Container
+        size="4"
+        className="mx-auto max-w-6xl overflow-hidden px-4 py-8"
+      >
         <Text as="h1" size="8" className="mb-6 block text-center">
           <Strong>GlobalMapping</Strong>
         </Text>
-        <div
-          ref={viewerContainerRef}
-          className="cesium-viewer-host mx-auto w-full max-w-5xl overflow-hidden rounded-lg border border-white/10 shadow-lg"
-          style={{ height: "70vh", minHeight: 420 }}
-        />
+        <div ref={viewerWrapRef} className="will-change-transform">
+          <div
+            ref={viewerContainerRef}
+            className="cesium-viewer-host mx-auto w-full max-w-5xl overflow-hidden rounded-lg border border-white/10 shadow-lg"
+            style={{ height: "70vh", minHeight: 420 }}
+          />
+        </div>
       </Container>
     </Theme>
   );
