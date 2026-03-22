@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useLayoutEffect } from "react";
 import Link from "next/link";
+import gsap from "gsap";
 import {
   Theme,
   Box,
@@ -20,6 +21,43 @@ import "@radix-ui/themes/styles.css";
 const iconProps = { width: 24, height: 24 };
 
 export default function Contact() {
+  const contactRootRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const root = contactRootRef.current;
+    if (!root) return;
+
+    const ctx = gsap.context(() => {
+      const blocks = gsap.utils.toArray(
+        root.querySelectorAll("[data-contact-anim]"),
+      );
+      blocks.forEach((block) => {
+        gsap.fromTo(
+          block,
+          {
+            opacity: 0,
+            y: gsap.utils.random(28, 72),
+            x: gsap.utils.random(-56, 56),
+            rotation: gsap.utils.random(-10, 10),
+            scale: gsap.utils.random(0.86, 0.98),
+          },
+          {
+            opacity: 1,
+            y: 0,
+            x: 0,
+            rotation: 0,
+            scale: 1,
+            duration: gsap.utils.random(0.45, 0.95),
+            ease: "back.out(1.35)",
+            delay: gsap.utils.random(0, 1.05),
+          },
+        );
+      });
+    }, root);
+
+    return () => ctx.revert();
+  }, []);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -76,7 +114,11 @@ export default function Contact() {
 
   return (
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
-      <Box className="bg-slate-800 px-4 py-3 sm:px-6 sm:py-4">
+      <div ref={contactRootRef}>
+      <Box
+        data-contact-anim
+        className="bg-slate-800 px-4 py-3 sm:px-6 sm:py-4"
+      >
         <Flex gap="6" align="center" wrap="wrap">
           <Button variant="ghost" size="2" asChild>
             <Link
@@ -102,6 +144,7 @@ export default function Contact() {
       <Box className="min-h-screen bg-slate-950 px-4 py-12 sm:px-6">
         <Container size="3" className="mx-auto max-w-xl">
           <Link
+            data-contact-anim
             href="/"
             className="mb-6 inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
           >
@@ -109,14 +152,19 @@ export default function Contact() {
             ← Back to Home
           </Link>
 
-          <Heading size="8" weight="bold" className="mb-8 text-white">
+          <Heading
+            data-contact-anim
+            size="8"
+            weight="bold"
+            className="mb-8 text-white"
+          >
             Contact
           </Heading>
 
           <Card size="3" className="p-6 sm:p-8">
             <form onSubmit={handleSubmit}>
               <Flex direction="column" gap="4">
-                <Box>
+                <Box data-contact-anim>
                   <Text
                     as="label"
                     htmlFor="contact-name"
@@ -138,7 +186,7 @@ export default function Contact() {
                   />
                 </Box>
 
-                <Box>
+                <Box data-contact-anim>
                   <Text
                     as="label"
                     htmlFor="contact-email"
@@ -161,7 +209,7 @@ export default function Contact() {
                   />
                 </Box>
 
-                <Box>
+                <Box data-contact-anim>
                   <Text
                     as="label"
                     htmlFor="contact-message"
@@ -183,7 +231,7 @@ export default function Contact() {
                   />
                 </Box>
 
-                <Flex justify="end" className="pt-2">
+                <Flex data-contact-anim justify="end" className="pt-2">
                   <Button
                     type="submit"
                     size="3"
@@ -198,6 +246,7 @@ export default function Contact() {
           </Card>
         </Container>
       </Box>
+      </div>
 
       <Dialog.Root open={dialogOpen} onOpenChange={handleDialogOpenChange}>
         <Dialog.Content size="2" maxWidth="360px">
