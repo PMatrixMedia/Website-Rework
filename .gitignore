@@ -25,6 +25,7 @@
 
 # blog entries (file fallback when DB unavailable)
 /data/blog-entries.json
+/data/contact-submissions.jsonl
 
 # misc
 .DS_Store

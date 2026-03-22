@@ -65,6 +65,8 @@ INSERT INTO post_tags (post_id, tag_id) SELECT 2, id FROM tags WHERE name IN ('d
 INSERT INTO post_tags (post_id, tag_id) SELECT 3, id FROM tags WHERE name IN ('features', 'roadmap');
 
 -- Contact form submissions (for Hasura; optionally add Event Trigger to email info@phasematrixmedia.com)
+-- id: SERIAL = implicit DEFAULT nextval(...); if you ever see NOT NULL id errors on insert,
+-- run backend/migrations/fix_contact_submissions_id.sql on that database.
 CREATE TABLE IF NOT EXISTS contact_submissions (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255),

@@ -51,6 +51,15 @@ docker compose up -d
 
    When a row is inserted into `contact_submissions`, Hasura POSTs the event to the webhook; the Next.js route at `/api/webhooks/hasura/contact` sends the email via Resend. Set `RESEND_API_KEY` (and optionally `CONTACT_FROM_EMAIL`) in your Next.js app env (e.g. Vercel).
 
+### Contact form: `id` NOT NULL / null value in column `id`
+
+If GraphQL/Postgres returns **`null value in column "id"`** or **`violates not-null constraint`** on insert:
+
+1. **Fix the database** (recommended): run `backend/migrations/fix_contact_submissions_id.sql` on your Postgres so `id` has a proper `DEFAULT` / sequence.
+2. **Or** rely on the Next.js `/api/contact` fallback: set **`RESEND_API_KEY`** so submissions still reach **info@phasematrixmedia.com** when Hasura insert fails.
+
+In Hasura **Permissions** for inserts (non-admin roles), only allow columns **`name`**, **`email`**, **`message`** — do **not** set column presets for **`id`** (let the database default apply).
+
 ## 2. Python MCP Server
 
 ### Install
