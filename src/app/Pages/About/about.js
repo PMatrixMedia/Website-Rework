@@ -209,7 +209,7 @@ export default function About() {
       </Box>
 
       {/* Main content - first paragraph */}
-      <Box className="relative bg-black py-8 px-6 min-h-[50vh] sm:px-8">
+      <div className="relative bg-black py-8 px-6 min-h-[50vh] sm:px-8">
         <Flex justify="center">
           <Container size="3" className="max-w-[1000px]">
             <Blockquote ref={blockquoteRef} size="7">
@@ -225,7 +225,7 @@ export default function About() {
             </Blockquote>
           </Container>
         </Flex>
-      </Box>
+      </div>
     </Theme>
   );
 };

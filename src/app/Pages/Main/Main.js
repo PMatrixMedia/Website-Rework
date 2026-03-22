@@ -8,6 +8,7 @@ import {
   FileTextIcon,
   GearIcon,
   EnvelopeClosedIcon,
+  GlobeIcon,
 } from "@radix-ui/react-icons";
 import { Theme, Button, Strong, Box, Text, Container, Section, Flex, Blockquote, Avatar } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
@@ -88,10 +89,29 @@ export default function PhaseMain() {
               <Text size="6"><Strong>Blog</Strong></Text>
             </NavButton>
           </div>
-          <div className="nav-item hover:scale-120">
+          <div className="nav-item hover:scale-120 relative group">
             <NavButton href="/features" icon={GearIcon}>
               <Text size="6"><Strong>Features</Strong></Text>
             </NavButton>
+            <div
+              className="absolute left-0 top-full z-50 pt-1 min-w-[200px] opacity-0 invisible pointer-events-none transition-opacity duration-150 group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto"
+              role="navigation"
+              aria-label="Features submenu"
+            >
+              <div className="rounded-md border border-white/20 bg-gray-500/75 p-1 shadow-lg backdrop-blur-m">
+                <Button variant="ghost" size="3" asChild className="w-full justify-start ml-1 text-white hover:bg-gray-600">
+                  <Link
+                    href="/mapping"
+                    className="flex items-center gap-2 px-4 py-2 transition-all duration-200 ease-out hover:scale-[1.02]"
+                  >
+                    <GlobeIcon {...iconProps} />
+                    <Text size="4">
+                      <Strong>GlobalMapping</Strong>
+                    </Text>
+                  </Link>
+                </Button>
+              </div>
+            </div>
           </div>
           <div className="nav-item hover:scale-120">
             <NavButton href="/contact" icon={EnvelopeClosedIcon}>

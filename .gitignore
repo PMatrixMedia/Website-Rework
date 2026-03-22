@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# Cesium (copied by yarn postinstall from node_modules)
+/public/cesium
+
 # production
 /build
 
