@@ -24,6 +24,8 @@ export default {
         geistMono: ["var(--font-geist-mono)", "monospace"],
         // Nabla Google font – loaded in layout.js via next/font/google (--font-nabla)
         nabla: ["var(--font-nabla)", "Nabla", "system-ui"],
+        // Asimovian – Google Fonts link in layout.js; --font-asimovian in globals.css @theme
+        asimovian: ["var(--font-asimovian)", "sans-serif"],
       },
       maxWidth: {
         "sphere-canvas": "1400px",

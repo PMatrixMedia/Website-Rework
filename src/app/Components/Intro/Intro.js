@@ -2,16 +2,22 @@
 
 import React, { useRef, useEffect } from "react";
 import gsap from "gsap";
+import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
-import { Theme, Box, Text, Container } from "@radix-ui/themes";
+import { Theme, Box, Text, Heading, Container } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import SphereScene from "./SphereScene";
 
+gsap.registerPlugin(ScrambleTextPlugin);
+
 const WORDS = ["Click", "the", "Spheres", "to", "explore", "the", "site..."];
+
+const BANNER_BLURB = "Creative Technology -  Digital Worlds - Real Impact";
 
 const Intro = () => {
   const wordRefs = useRef([]);
+  const bannerRef = useRef(null);
 
   useEffect(() => {
     const words = wordRefs.current.filter(Boolean);
@@ -28,12 +34,70 @@ const Intro = () => {
     });
   }, []);
 
+  useEffect(() => {
+    const el = bannerRef.current;
+    if (!el) return;
+
+    const ctx = gsap.context(() => {
+      gsap.to(el, {
+        duration: 4,
+        scrambleText: {
+          text: BANNER_BLURB,
+          speed: 1.0,
+        },
+        delay: 4,
+        repeat: -1,
+        repeatDelay: 6,
+      });
+    }, el);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
-        <Box className="absolute inset-x-0 top-0">
+        <Box className="absolute inset-x-0 top-1">
           <Container>
-          <Box className="relative inset-x-0 top-0">
+          <Box className="relative inset-x-1 top-3">
+            <Box
+              className="relative z-20 w-full min-w-0  px-0 pb-2 pt-0 sm:px-0 sm:pb-2 sm:pt-0 md:px-0 [&::-webkit-scrollbar]:hidden"
+              style={{
+                pointerEvents: "none",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              }}
+            >
+              <Heading
+                as="h1"
+                size="6"
+                weight="regular"
+                color="orange"
+                className="asimovian-regular m-0 w-full text-center leading-tight pb-[0.1em]"
+                style={{
+                  textDecoration: "none",
+                  fontFamily: "Asimovian",
+                  fontWeight: "normal",
+                  fontStyle: "normal",
+                  fontVariationSettings: "normal",
+                  fontStretch: "normal",
+                  fontVariant: "normal",
+                  fontVariantLigatures: "normal",
+                  fontVariantNumeric: "normal",
+                  fontSize:
+                    "clamp(1.525rem, max(1.8875rem, min(5.5vw, 2.75rem)), 2.75rem)",
+                }}
+              >
+                <span
+                  ref={bannerRef}
+                  className="block w-full whitespace-nowrap"
+                >
+                  {BANNER_BLURB}
+                </span>
+              </Heading>
+            </Box>
+            <div className="relative inset-x-3 top-3">
             <SphereScene />
+            </div>
           </Box>
           </Container>
           <Box className="relative z-10 flex justify-center-safe px-3 pb-3 pt-3 text-base sm:px-4 sm:pb-4 sm:pt-4 sm:text-lg md:px-6 md:pb-6 md:pt-6 md:text-xl lg:text-2xl" style={{ perspective: "600px" }}>

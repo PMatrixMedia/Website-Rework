@@ -1,0 +1,4 @@
+/* Asimovian font token — imported into Tailwind’s theme layer (see globals.css) */
+@theme {
+  --font-asimovian: "Asimovian", sans-serif;
+}

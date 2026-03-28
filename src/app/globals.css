@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./theme/asimovian.layer.css" layer(theme);
 
 /* Tailwind v4 theme – design tokens for PhaseMatrix */
 @theme {
@@ -60,6 +61,13 @@ a {
   font-variation-settings:
     "EDPT" 77,
     "EHLT" 12;
+}
+
+/* Asimovian: Google Fonts link in layout.js; token lives in theme/asimovian.layer.css (theme layer) */
+@layer components {
+  .asimovian-regular {
+    @apply font-asimovian font-normal;
+  }
 }
 
 /* Intro & sphere – responsive styles now use Tailwind utilities in components */
