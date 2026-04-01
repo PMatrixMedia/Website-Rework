@@ -6,11 +6,13 @@ import "@radix-ui/themes/styles.css";
 export default function BlogPost({ post }) {
   if (!post) {
     return (
-      <Theme appearance="inherit" accentColor="gray" grayColor="slate">
-        <div className="min-h-screen bg-(--background) text-(--foreground) flex items-center justify-center">
+      <Theme appearance="dark" accentColor="orange" grayColor="slate" radius="medium">
+        <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
           <Box className="text-center">
-            <Heading size="6" className="mb-4">Post not found</Heading>
-            <Link href="/blog" className="opacity-70 hover:opacity-100">
+            <Heading size="6" className="mb-4">
+              Post not found
+            </Heading>
+            <Link href="/blog" className="text-orange-400 opacity-90 hover:opacity-100">
               ← Back to Blog
             </Link>
           </Box>
@@ -20,10 +22,13 @@ export default function BlogPost({ post }) {
   }
 
   return (
-    <Theme appearance="inherit" accentColor="gray" grayColor="slate">
-      <div className="min-h-screen bg-(--background) text-(--foreground)">
+    <Theme appearance="dark" accentColor="orange" grayColor="slate" radius="medium">
+      <div className="min-h-screen bg-slate-950 text-slate-100">
         <article className="max-w-3xl mx-auto px-6 py-16">
-          <Link href="/blog" className="text-sm mb-6 block opacity-70 hover:opacity-100 transition-opacity">
+          <Link
+            href="/blog"
+            className="text-sm mb-6 block text-orange-400/90 hover:text-orange-300 transition-colors"
+          >
             ← Back to Blog
           </Link>
 
@@ -58,7 +63,7 @@ export default function BlogPost({ post }) {
           </Flex>
 
           <div
-            className="prose max-w-none leading-relaxed dark:prose-invert"
+            className="max-w-none leading-relaxed text-slate-200 [&_a]:text-orange-400 [&_a]:underline-offset-2 hover:[&_a]:text-orange-300 [&_p]:mb-4 [&_strong]:font-semibold [&_strong]:text-slate-50"
             dangerouslySetInnerHTML={{ __html: post.content?.replace(/\n/g, "<br />") || post.excerpt }}
           />
         </article>
