@@ -8,6 +8,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Theme, Box, Text, Heading, Container } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import SphereScene from "./SphereScene";
+import LetterGlitch from "./LetterGlitch";
 
 gsap.registerPlugin(ScrambleTextPlugin);
 
@@ -56,11 +57,25 @@ const Intro = () => {
 
   return (
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
+        <Box className="relative min-h-dvh w-full">
+          <Box
+            className="pointer-events-none fixed inset-0 z-0 min-h-dvh w-full"
+            aria-hidden
+          >
+            <LetterGlitch
+              glitchColors={["#052e16", "#166534", "#22c55e", "#4ade80", "#86efac"]}
+              glitchSpeed={55}
+              outerVignette
+              centerVignette={false}
+              smooth
+            />
+          </Box>
+        <Box className="relative z-10 min-h-dvh w-full">
         <Box className="absolute inset-x-0 top-1">
           <Container>
           <Box className="relative inset-x-1 top-3">
             <Box
-              className="relative z-20 w-full min-w-0  px-0 pb-2 pt-0 sm:px-0 sm:pb-2 sm:pt-0 md:px-0 [&::-webkit-scrollbar]:hidden"
+              className="relative z-20 w-full min-w-0 bg-black px-0 pb-2 pt-0 sm:px-0 sm:pb-2 sm:pt-0 md:px-0 [&::-webkit-scrollbar]:hidden"
               style={{
                 pointerEvents: "none",
                 scrollbarWidth: "none",
@@ -115,6 +130,8 @@ const Intro = () => {
             </Text>
             </Container>
           </Box>
+        </Box>
+        </Box>
         </Box>
         <Analytics />
         <SpeedInsights />
