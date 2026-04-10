@@ -9,13 +9,30 @@ import { Resend } from "resend";
 
 const DEFAULT_TO_EMAIL = "info@phasematrixmedia.com";
 
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (char) => {
+    switch (char) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case '"':
+        return "&quot;";
+      case "'":
+        return "&#39;";
+      default:
+        return char;
+    }
+  });
+}
+
 export function getHasuraConfig() {
   const endpoint =
     process.env.HASURA_GRAPHQL_ENDPOINT ||
     process.env.NEXT_PUBLIC_GRAPHQL_URL;
-  const adminSecret =
-    process.env.HASURA_ADMIN_SECRET ||
-    process.env.NEXT_PUBLIC_HASURA_ADMIN_SECRET;
+  const adminSecret = process.env.HASURA_ADMIN_SECRET;
   return { endpoint, adminSecret };
 }
 
@@ -81,6 +98,9 @@ export async function sendContactViaResend({ name, email, message }) {
     "PhaseMatrix Contact <onboarding@resend.dev>";
   const resend = new Resend(apiKey);
   const subject = name ? `Contact form: ${name}` : "Contact form submission";
+  const safeName = escapeHtml(name || "(not provided)");
+  const safeEmail = escapeHtml(email);
+  const safeMessage = escapeHtml(message).replace(/\n/g, "<br>");
   const text = [
     message,
     "",
@@ -89,10 +109,10 @@ export async function sendContactViaResend({ name, email, message }) {
     `Reply-To: ${email}`,
   ].join("\n");
   const html = [
-    `<p>${message.replace(/\n/g, "<br>")}</p>`,
+    `<p>${safeMessage}</p>`,
     "<hr>",
-    `<p><strong>From:</strong> ${name || "(not provided)"}<br>`,
-    `<strong>Reply-To:</strong> <a href="mailto:${email}">${email}</a></p>`,
+    `<p><strong>From:</strong> ${safeName}<br>`,
+    `<strong>Reply-To:</strong> <a href="mailto:${safeEmail}">${safeEmail}</a></p>`,
   ].join("");
 
   const { error } = await resend.emails.send({

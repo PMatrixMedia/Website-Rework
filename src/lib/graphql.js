@@ -21,8 +21,8 @@ function getHeaders(options = {}) {
     "Content-Type": "application/json",
     ...options.headers,
   };
-  if (isHasura() && process.env.NEXT_PUBLIC_HASURA_ADMIN_SECRET) {
-    headers["x-hasura-admin-secret"] = process.env.NEXT_PUBLIC_HASURA_ADMIN_SECRET;
+  if (isHasura() && process.env.HASURA_ADMIN_SECRET) {
+    headers["x-hasura-admin-secret"] = process.env.HASURA_ADMIN_SECRET;
   }
   return headers;
 }

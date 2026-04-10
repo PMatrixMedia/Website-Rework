@@ -21,17 +21,20 @@ const GlobalStyles = `
   .navbar-brand {
     font-weight: bold;
   }
-  .nav-link img {
-    height: 24px; /* Set a consistent height for navbar icons */
-    width: auto;
-    filter: invert(100%); /* Example style to make icons visible on a dark navbar */
+  .nav-link .social-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
   }
 `;
-
-// Placeholder for local image imports
-const gitImg = 'https://placehold.co/24x24/ffffff/000000?text=G';
-const linkedinImg = 'https://placehold.co/24x24/ffffff/000000?text=in';
-
 
 // --- Refactored RSnavbar Component ---
 
@@ -57,7 +60,8 @@ const RSnavbar = () => {
             {/* The NavLink is now correctly wrapped in a NavItem */}
             <NavItem>
               <NavLink href="https://github.com/PMatrixMedia" target="_blank" rel="noopener noreferrer">
-                <img src={gitImg} alt="GitHub Profile" />
+                <span className="social-badge" aria-hidden="true">GH</span>
+                <span className="visually-hidden">GitHub Profile</span>
               </NavLink>
             </NavItem>
             <NavItem>
@@ -68,7 +72,8 @@ const RSnavbar = () => {
             {/* The NavLink is now correctly wrapped in a NavItem */}
             <NavItem>
               <NavLink href="https://www.linkedin.com/in/christopher-faison-1b7b6948" target="_blank" rel="noopener noreferrer">
-                <img src={linkedinImg} alt="LinkedIn Profile" />
+                <span className="social-badge" aria-hidden="true">IN</span>
+                <span className="visually-hidden">LinkedIn Profile</span>
               </NavLink>
             </NavItem>
             <UncontrolledDropdown nav inNavbar>
