@@ -46,6 +46,10 @@ export default function GlobalMappingPage() {
 
     let destroyed = false;
 
+    // No Ion token: default Viewer terrain/imagery hits api.cesium.com and often fails in production.
+    const osm = new Cesium.OpenStreetMapImageryProvider({
+      url: "https://a.tile.openstreetmap.org/",
+    });
     const viewer = new Cesium.Viewer(container, {
       animation: false,
       timeline: false,
@@ -59,14 +63,9 @@ export default function GlobalMappingPage() {
       infoBox: true,
       selectionIndicator: true,
       shouldAnimate: true,
+      imageryProvider: osm,
+      terrainProvider: new Cesium.EllipsoidTerrainProvider(),
     });
-
-    viewer.imageryLayers.removeAll();
-    viewer.imageryLayers.addImageryProvider(
-      new Cesium.OpenStreetMapImageryProvider({
-        url: "https://a.tile.openstreetmap.org/",
-      }),
-    );
 
     viewer.scene.globe.enableLighting = true;
 
