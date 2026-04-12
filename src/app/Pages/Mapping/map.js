@@ -46,7 +46,8 @@ export default function GlobalMappingPage() {
 
     let destroyed = false;
 
-    // No Ion token: default Viewer terrain/imagery hits api.cesium.com and often fails in production.
+    // With baseLayerPicker: false, Viewer ignores imageryProvider and defaults baseLayer to
+    // ImageryLayer.fromWorldImagery() (Ion). Use baseLayer + ellipsoid terrain so nothing hits api.cesium.com.
     const osm = new Cesium.OpenStreetMapImageryProvider({
       url: "https://a.tile.openstreetmap.org/",
     });
@@ -54,6 +55,7 @@ export default function GlobalMappingPage() {
       animation: false,
       timeline: false,
       baseLayerPicker: false,
+      baseLayer: new Cesium.ImageryLayer(osm),
       fullscreenButton: true,
       vrButton: false,
       geocoder: false,
@@ -63,7 +65,6 @@ export default function GlobalMappingPage() {
       infoBox: true,
       selectionIndicator: true,
       shouldAnimate: true,
-      imageryProvider: osm,
       terrainProvider: new Cesium.EllipsoidTerrainProvider(),
     });
 
