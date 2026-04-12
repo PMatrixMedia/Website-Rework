@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useGlobalMapping } from "@/app/Components/Mapping/GlobalMappingProvider";
 import gsap from "gsap";
 import { PhaseNavBar, PhaseNavLink } from "@/app/Components/Nav/PhaseNavBar";
 import {
@@ -39,6 +40,7 @@ const BLOCKQUOTE_TEXT =
 
 export default function PhaseMain() {
   const router = useRouter();
+  const { openGlobalMapping } = useGlobalMapping();
   const avatarRef = useRef(null);
   const blockquoteRef = useRef(null);
   const [wcOpen, setWcOpen] = useState(false);
@@ -102,16 +104,17 @@ export default function PhaseMain() {
             aria-label="Features submenu"
           >
             <div className="flex flex-col gap-0.5 rounded-md border border-white/20 bg-gray-500/75 p-1.5 shadow-lg backdrop-blur-md">
-              <Button variant="ghost" size="4" asChild className="phase-nav-button-root w-full justify-start">
-                <Link
-                  href="/mapping"
-                  className="phase-nav-link flex w-full items-center gap-3 px-6 py-4"
-                >
-                  <GlobeIcon {...iconProps} />
-                  <Text size="4">
-                    <Strong>GlobalMapping</Strong>
-                  </Text>
-                </Link>
+              <Button
+                variant="ghost"
+                size="4"
+                type="button"
+                className="phase-nav-button-root phase-nav-link flex w-full items-center justify-start gap-3 px-6 py-4"
+                onClick={() => openGlobalMapping()}
+              >
+                <GlobeIcon {...iconProps} />
+                <Text size="4">
+                  <Strong>GlobalMapping</Strong>
+                </Text>
               </Button>
               <Dialog.Root open={wcOpen} onOpenChange={setWcOpen}>
                 <Dialog.Trigger asChild>

@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono, Nabla } from "next/font/google";
+import { GlobalMappingProvider } from "@/app/Components/Mapping/GlobalMappingProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -39,7 +40,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${nabla.variable} antialiased`}
       >
-        {children}
+        <GlobalMappingProvider>{children}</GlobalMappingProvider>
       </body>
     </html>
   );

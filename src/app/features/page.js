@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GlobeIcon, VideoIcon } from "@radix-ui/react-icons";
+import { VideoIcon } from "@radix-ui/react-icons";
 import {
   Theme,
   Box,
@@ -13,6 +13,7 @@ import {
 } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import { FeaturesTopNav } from "@/app/features/FeaturesTopNav";
+import { FeaturesMappingCard } from "@/app/features/FeaturesMappingCard";
 
 export const metadata = {
   title: "Features | PhaseMatrixMedia",
@@ -22,13 +23,6 @@ export const metadata = {
 const iconProps = { width: 22, height: 22 };
 
 const FEATURES = [
-  {
-    href: "/mapping",
-    title: "Global Mapping",
-    description:
-      "Explore the interactive globe experience and spatial visualization work.",
-    Icon: GlobeIcon,
-  },
   {
     href: "/webconferencing",
     title: "Web Conferencing",
@@ -58,6 +52,7 @@ export default function FeaturesPage() {
           </Flex>
 
           <Grid columns={{ initial: "1", md: "2" }} gap="6">
+            <FeaturesMappingCard />
             {FEATURES.map(({ href, title, description, Icon }) => (
               <Card
                 key={href}
