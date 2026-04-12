@@ -3,27 +3,19 @@
 ## Quick checklist
 
 - [ ] Neon project exists and is accessible
-- [ ] Hasura endpoint is reachable
+- [ ] Hasura endpoint is reachable and points at the same database you initialized
 - [ ] `HASURA_GRAPHQL_ENDPOINT` set in Vercel (Production + Preview)
 - [ ] `HASURA_ADMIN_SECRET` set in Vercel (Production + Preview)
-- [ ] `init_db.sql` applied to Neon database
+- [ ] `init_db.sql` applied to the database Hasura uses (often Neon)
 - [ ] Redeploy Vercel after changing env vars
 
 ---
 
 ## 1. Neon setup
 
-Use these Neon resources:
-
-- **Org:** `org-sweet-hat-08378913`
-- **Project:** `little-surf-12235556`
-
-### Get the connection string
-
-1. Open your Neon project in [Neon Console](https://console.neon.tech/)
-2. Go to **Connection Details**
-3. Copy the **pooled** PostgreSQL connection string for your target branch (usually main)
-4. Ensure SSL is enabled in the URL (Neon URLs include this by default)
+- In the [Neon Console](https://console.neon.tech/), open your **project** and target **branch** (usually `main`).
+- Go to **Connection details** and copy the **pooled** PostgreSQL connection string.
+- Ensure SSL is enabled (`sslmode=require` is typical for Neon).
 
 Example shape:
 
@@ -31,56 +23,80 @@ Example shape:
 postgresql://<user>:<password>@<endpoint>/<database>?sslmode=require
 ```
 
+Use this URI in **Hasura** as the database URL (Hasura Cloud or self-hosted), not necessarily as a Vercel var, unless you add server code that connects with `pg` via `DATABASE_URL` (see optional variables below).
+
 ### Run the database schema
 
-1. Open **SQL Editor** in Neon (or run `psql` locally)
-2. Execute `backend/init_db.sql`
-4. Confirm tables `authors`, `tags`, `posts`, `post_tags` were created
+- Open **SQL Editor** in Neon (or run `psql` with the same connection string).
+- Execute `backend/init_db.sql` from this repository.
+- Confirm tables such as `authors`, `tags`, `posts`, `post_tags`, and `contact_submissions` exist (per script).
 
 ---
 
 ## 2. Vercel environment variables
 
-1. Go to [Vercel Dashboard](https://vercel.com/dashboard) → your project
-2. **Settings** → **Environment Variables**
-3. Add:
+- Go to [Vercel Dashboard](https://vercel.com/dashboard) → your project.
+- **Settings** → **Environment Variables**.
+- Add the variables below for **Production** and **Preview** (and **Development** if you use Vercel env pull locally).
+- **Redeploy** (Deployments → ⋮ → Redeploy) so new values load into the runtime.
 
-| Name | Value | Environments |
-|------|-------|--------------|
-| `HASURA_GRAPHQL_ENDPOINT` | `https://model-honeybee-77.hasura.app/v1/graphql` | Production, Preview |
-| `HASURA_ADMIN_SECRET` | Your Hasura admin secret | Production, Preview |
-| `RESEND_API_KEY` | Your Resend API key (for contact form → info@phasematrixmedia.com) | Production, Preview |
+### Required for blog + contact (Hasura path)
 
-4. **Redeploy** the project (Deployments → ⋮ → Redeploy) so new env vars take effect.
+| Name | Value | Notes |
+| ---- | ----- | ----- |
+| `HASURA_GRAPHQL_ENDPOINT` | `https://<your-project>.hasura.app/v1/graphql` | Must match the GraphQL endpoint Hasura serves. |
+| `HASURA_ADMIN_SECRET` | Admin secret from Hasura | Used server-side only; never `NEXT_PUBLIC_*`. |
+
+### Required for contact email (Resend path)
+
+| Name | Value | Notes |
+| ---- | ----- | ----- |
+| `RESEND_API_KEY` | Resend API key | Needed for `/api/contact` email and the Hasura contact webhook email. |
+
+### Optional
+
+| Name | Purpose |
+| ---- | ------- |
+| `CONTACT_FROM_EMAIL` | Verified sender in Resend (e.g. `PhaseMatrix <contact@yourdomain.com>`). If unset, code falls back to Resend’s onboarding sender where applicable. |
+| `CONTACT_TO_EMAIL` | Inbox for contact notifications from `/api/contact` when using Resend (defaults to `info@phasematrixmedia.com` in code if unset). |
+| `NEXT_PUBLIC_GRAPHQL_URL` | Overrides the GraphQL URL on the client when set; server code prefers `HASURA_GRAPHQL_ENDPOINT`. See `src/lib/graphql.js`. |
+| `NEXT_PUBLIC_API_URL` | Legacy Flask-style API base URL when not using Hasura for GraphQL. |
+| `DATABASE_URL` | Neon pooled URI if you use `src/lib/db.js` with `pg` directly (currently unused by shipped routes; safe to add for future features). |
 
 ---
 
-## 3. Troubleshooting
+## 3. Hasura event trigger (contact emails)
+
+If inserts go to Hasura first, configure an **Event trigger** on `contact_submissions` that POSTs to:
+
+`https://<your-deployment>.vercel.app/api/webhooks/hasura/contact`
+
+Example (replace host with your deployment): see [Vercel deployment URLs](https://vercel.com/docs/deployments/overview).
+
+Details and local tunneling: see `HASURA_SETUP.md`.
+
+---
+
+## 4. Troubleshooting
 
 ### Connection or DNS errors
 
-- **Cause:** Wrong endpoint, password, or blocked outbound network.
+- **Cause:** Wrong Hasura URL, wrong secret, or network blocking outbound requests.
 - **Fix:**
-  1. Verify `HASURA_GRAPHQL_ENDPOINT` exactly matches your Hasura Cloud endpoint
-  2. Confirm `HASURA_ADMIN_SECRET` is copied correctly
-  3. Test a GraphQL request from local terminal before redeploying
+  - Verify `HASURA_GRAPHQL_ENDPOINT` matches Hasura **Settings → API endpoint**.
+  - Confirm `HASURA_ADMIN_SECRET` has no leading/trailing spaces or newlines.
+  - From your machine, run a small `curl` POST with `x-hasura-admin-secret` before redeploying.
 
-### `init_db.sql has been run`
+### Missing tables / blog or contact failures
 
-- Run `backend/init_db.sql` against Neon once.
-- If tables already exist, the script uses `IF NOT EXISTS` and `ON CONFLICT`, so re-running is safe.
+- Run `backend/init_db.sql` against the **same** database Hasura metadata tracks.
+- The script is written to be re-runnable where it uses `IF NOT EXISTS` / sensible defaults; duplicate key errors on seed data may still need a glance at the script.
 
 ### Password / authentication errors
 
-- Rotate the admin secret in Hasura and update `HASURA_ADMIN_SECRET` in Vercel
-- Confirm no extra spaces/newlines in environment variable values
+- Rotate the admin secret in Hasura and update `HASURA_ADMIN_SECRET` in Vercel.
+- Trim whitespace in all secret values.
 
----
+### Yarn warnings (`engine "pnpm"`, workspaces)
 
-## Optional
-
-| Name | Value |
-|------|-------|
-| `CONTACT_FROM_EMAIL` | Custom "from" for contact emails (e.g. `PhaseMatrix <contact@yourdomain.com>`); must be a verified domain in Resend. If unset, uses Resend’s onboarding sender. |
-| `NEXT_PUBLIC_API_URL` | Your Flask backend URL (if deployed) |
-| `NEXT_PUBLIC_GRAPHQL_URL` | GraphQL endpoint URL |
+- Those come from **transitive** packages (e.g. tooling that declares a `pnpm` engine). They do not stop `yarn install` or `next build` on Vercel if the build completed; upgrading dependencies over time may clear them.

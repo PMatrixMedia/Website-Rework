@@ -1,4 +1,4 @@
-import MapView from "../Pages/Mapping/map";
+import MappingClient from "./MappingClient";
 
 export const metadata = {
   title: "Globalmapping | PhaseMatrixMedia",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function MappingRoutePage() {
-  return <MapView />;
+  return <MappingClient />;
 }
