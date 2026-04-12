@@ -24,7 +24,7 @@ const SOCIAL_LINKS = [
   {
     href: "https://github.com/PMatrixMedia",
     label: "GitHub",
-    imageSrc: "/images/github.png",
+    imageSrc: "/Images/github.png",
     width: 24,
     height: 24,
     invert: true,
@@ -32,14 +32,14 @@ const SOCIAL_LINKS = [
   {
     href: "https://www.linkedin.com/in/christopher-faison-1b7b6948",
     label: "LinkedIn",
-    imageSrc: "/images/Linkedin.png",
+    imageSrc: "/Images/Linkedin.png",
     width: 24,
     height: 24,
   },
   {
     href: "https://codesandbox.io/u/PMatrixMedia",
     label: "CodeSandbox",
-    imageSrc: "/images/codesandbox.png",
+    imageSrc: "/Images/codesandbox.png",
     width: 92,
     height: 24,
   },

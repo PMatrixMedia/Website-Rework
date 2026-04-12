@@ -127,7 +127,7 @@ export default function About() {
                   className={socialLinkClass}
                 >
                   <Image
-                    src="/images/github.png"
+                    src="/Images/github.png"
                     alt=""
                     width={24}
                     height={24}

@@ -26,6 +26,8 @@ const config = {
         nabla: ["var(--font-nabla)", "Nabla", "system-ui"],
         // Asimovian – Google Fonts link in layout.js; --font-asimovian in globals.css @theme
         asimovian: ["var(--font-asimovian)", "sans-serif"],
+        // Electrolize – Google Fonts link in layout.js (same as .electrolize-regular in globals.css)
+        electrolize: ['"Electrolize"', "sans-serif"],
       },
       maxWidth: {
         "sphere-canvas": "1400px",

@@ -146,7 +146,7 @@ const SphereScene = () => {
     plate.renderingGroupId = 0;
 
     const plateMat = new BABYLON.StandardMaterial("plateMat", scene);
-    const plateTexture = new BABYLON.Texture("/images/phasematrixplate.png", scene);
+    const plateTexture = new BABYLON.Texture("/Images/phasematrixplate.png", scene);
     plateTexture.uScale = 1;
     plateTexture.vScale = 1;
     plateTexture.wrapU = BABYLON.Texture.CLAMP_ADDRESSMODE;
