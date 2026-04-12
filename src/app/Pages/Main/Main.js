@@ -30,11 +30,12 @@ import {
 } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import avatarImg from "../About/avatar(2).jpg";
+import LetterGlitch from "@/app/Components/Intro/LetterGlitch";
 
 const iconProps = { width: 30, height: 30, className: "phase-nav-icon" };
 
 const BLOCKQUOTE_TEXT =
-  "Quick Update: I have redesigned my page to make the navigation more intuative and to be mobile friendly. Look forward to more updates moving forward and in the future.  Also redid the blog section.";
+  "Quick Update: I have redesigned my page to make the navigation more intuative and to be mobile friendly.Check out the Blog section to find out what's new.";
 
 export default function PhaseMain() {
   const router = useRouter();
@@ -125,7 +126,7 @@ export default function PhaseMain() {
                       className="phase-nav-link flex w-full items-center gap-3 px-6 py-4 text-left"
                     >
                       <VideoIcon {...iconProps} />
-                      <Text size="54">
+                      <Text size="5">
                         <Strong>WebConferencing</Strong>
                       </Text>
                     </button>
@@ -210,33 +211,52 @@ export default function PhaseMain() {
       grayColor="slate"
       radius="small"
     >
-      <PhaseNavBar items={mainNavItems} />
-        <Box align="left" justify="left">
-        <Section size={{ base: '4', lg: '4' }}
-        />         
- <Container>
-          <Flex direction="column" align="start" gap="4">
-            <Box ref={avatarRef}>
-              <Avatar
-                src={avatarImg.src}
-                alt="Profile"
-                size="5"
-                fallback="?"
-                radius="full"
-              />
-            </Box>
-          <div ref={blockquoteRef}>
-            <Blockquote size="8" color="orange" className="electrolize-regular">
-              {words.map((word, i) => (
-                <span key={i} className="blockquote-word inline">
-                  {word}{" "}
-                </span>
-              ))}
-            </Blockquote>
-          </div>
-          </Flex>
-          </Container>
+      <Box className="relative min-h-dvh w-full">
+        <Box
+          className="pointer-events-none fixed inset-0 z-0 min-h-dvh w-full"
+          aria-hidden
+        >
+          <LetterGlitch
+            glitchColors={["#052e16", "#166534", "#22c55e", "#4ade80", "#86efac"]}
+            glitchSpeed={55}
+            outerVignette
+            centerVignette={false}
+            smooth
+          />
+        </Box>
+
+        <Box className="relative z-10 min-h-dvh w-full">
+          <PhaseNavBar items={mainNavItems} />
+          <Box align="left" justify="left">
+            <Section size={{ base: "4", lg: "4" }} />
+            <Container>
+              <Flex direction="column" align="start" gap="4">
+                <Box
+                  ref={avatarRef}
+                  className="inline-flex rounded-full bg-black p-2"
+                >
+                  <Avatar
+                    src={avatarImg.src}
+                    alt="Profile"
+                    size="7"
+                    fallback="?"
+                    radius="full"
+                  />
+                </Box>
+                <div ref={blockquoteRef} className="w-full max-w-full rounded-md bg-black px-3 py-2">
+                  <Blockquote size="8" color="orange" className="electrolize-regular">
+                    {words.map((word, i) => (
+                      <span key={i} className="blockquote-word inline">
+                        {word}{" "}
+                      </span>
+                    ))}
+                  </Blockquote>
+                </div>
+              </Flex>
+            </Container>
           </Box>
+        </Box>
+      </Box>
     </Theme>
   );
 }
