@@ -1,0 +1,217 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title i18n="optionstitle">WTS Settings</title>
+	<link href="../helper_scripts/extension.css" rel="stylesheet">
+	<link href="options.css" rel="stylesheet">
+	<script src="../helper_scripts/browser.js"></script>
+	<script src="options.js"></script>
+	<meta charset="UTF-8">
+</head>
+
+<body>
+	<div id="spinneroverlay" class="overlay">
+		<div class="spinner">
+		</div>
+	</div>
+
+	<div class="mainframe">
+
+		<!-- permissions section -->
+		<div class="privacy" id="permissions">
+			<picture>
+				<source srcset="../images/logo-dark.svg" media="(prefers-color-scheme: dark)">
+				<source srcset="../images/logo.svg" media="(prefers-color-scheme: light)">
+				<img class="wrt-logo" src="../images/logo.svg" alt="Webroot">
+			</picture>
+
+			<hr />
+			<h4 id="privacyheadline">Privacy Policy Agreement</h4>
+
+			<p id="privacyDesciption1">
+				Webroot Web Threat Shield Extension for Mozilla Firefox requires your permission to gather information
+				about the webpages you visit (URLs and IP addresses). This is required for our database servers to check
+				the webpage and detect malware. Without this permission the extension will not be able to detect any
+				potentially malicious sites.
+			</p>
+			<p id="privacyDesciption2">
+				By clicking Allow and installing the extension, you agree to forward the visited or searched URL information
+				to Webroot servers to compare URLs in the malware databases.
+			</p>
+			<p id="privacyDesciption3">
+				For more information about what data we are collecting and how we are protecting it, please refer to our <a href="">Privacy Policy</a>.
+			</p>
+			<div id="AutoOpenDisabledDiv1">
+				<input type="checkbox" id="AutoOpenDisabled1"><label id="AutoOpenDisabledText1" for="AutoOpenDisabled1">Do not show this again</label>
+			</div>
+
+			<hr class="withverticalspace" />
+
+			<div class="buttonsDiv">
+				<input type="button" class="transparentButton" id="declineButton" title="Decline" value="Decline" />
+				<input type="button" class="bluebutton" id="allowButton" title="Allow" value="Allow" />
+			</div>
+
+		</div>
+
+		<!-- permissions section for FF manifest V3 -->
+		<div class="privacy" id="permissionsFf">
+			<picture>
+				<source srcset="../images/logo-dark.svg" media="(prefers-color-scheme: dark)">
+				<source srcset="../images/logo.svg" media="(prefers-color-scheme: light)">
+				<img class="wrt-logo" src="../images/logo.svg" alt="Webroot">
+			</picture>
+
+			<hr />
+			<h4 id="permissionHeadlineFf">Additional Browser Permissions</h4>
+
+			<p id="permissionDescriptionFf-1">
+				This extension requires your permission to access all websites that you visit in order to identify malware pages.
+			</p>
+			<p id="permissionDescriptionFf-2">
+				By clicking Allow, Firefox will open a dialog to confirm or deny access. You can change the permissions any time in the 'Permissions' tab of the extension.
+			</p>
+			<div id="AutoOpenDisabledDivFf">
+				<input type="checkbox" id="AutoOpenDisabledFf"><label id="AutoOpenDisabledTextFf" for="AutoOpenDisabledFf">Do not show this again</label>
+			</div>
+
+			<hr class="withverticalspace" />
+
+			<div class="buttonsDiv">
+				<input type="button" class="transparentButton" id="declineButtonFfV3" title="Decline" value="Decline" />
+				<input type="button" class="bluebutton" id="allowButtonFfV3" title="Allow" value="Allow" />
+			</div>
+
+		</div>
+
+		<!-- permission declined section -->
+		<div class="privacy" id="permissiondecline">
+			<picture>
+				<source srcset="../images/logo-dark.svg" media="(prefers-color-scheme: dark)">
+				<source srcset="../images/logo.svg" media="(prefers-color-scheme: light)">
+				<img class="wrt-logo" src="../images/logo.svg" alt="Webroot">
+			</picture>
+
+			<hr />
+			<h4 id="declineheadline">Privacy Policy Agreement - Declined</h4>
+
+			<p id="privacyDeclineText1">
+				Unfortunately, without your permission to gather the necessary URL information, Web Threat Shield
+				cannot function as intended.
+			</p>
+			<p id="privacyDeclineText2">
+				Unless you wish to reconsider the permission to gather this information, we recommend you to
+				remove and uninstall the extension.
+			</p>
+			<hr class="withverticalspace" />
+			<div class="buttonsDiv">
+				<input type="button" class="transparentButton" id="privacyBackButton" title="Privacy" value="Privacy" />
+				<input type="button" class="bkRed" id="removeButton" title="Remove" value="Remove" />
+			</div>
+
+		</div>
+
+		<!-- settings section -->
+		<div class="options" id="settingsStandalone">
+			<picture>
+				<source srcset="../images/logo-dark.svg" media="(prefers-color-scheme: dark)">
+				<source srcset="../images/logo.svg" media="(prefers-color-scheme: light)">
+				<img class="wrt-logo" src="../images/logo.svg" alt="Webroot">
+			</picture>
+			<!-- Settings title -->
+			<h3 id="optionstitleSA">Web Threat Shield Settings</h3>
+			<span id="eulatext">
+				To activate this extension, please enter your Webroot keycode below.<br />
+				By clicking "Validate keycode" you hereby agree to the Webroot<br />
+				Solution Agreement available <a href="https://www.webroot.com/us/en/legal/service-terms-and-conditions" target="_blank" aria-label="service terms and conditions">here</a> and the Webroot Privacy Statement<br />
+				available <a href="https://www.webroot.com/us/en/legal/privacy" target="_blank" aria-label="privacy">here</a>.
+			</span>
+
+			<table>
+				<!-- Keycode input section -->
+				<tr id="keycode">
+					<td id="keycodelabel">Keycode:</td>
+					<td class="keycodevalue" id="keycodevalue"></td>
+				</tr>
+
+				<!-- Subscription expires in ... days -->
+				<tr id="subscription">
+					<td class="subscriptiontext" id="subscriptiontext">Days left on subscription:</td>
+					<td id="subscriptionvalue"></td>
+				</tr>
+
+				<tr id="notification">
+					<td id="notificationtext">
+						YOU ARE AT RISK <br />
+						New threats emerge daily! Webroot has protected its customers from millions of threats!
+					</td>
+					<td><input class="bluebutton" id="notificationButton" type="button" title="Renew Now" value="Renew Now" /></td>
+				</tr>
+				<tr>
+					<td>
+						<div id="keycodevalidator">
+							<img id="keycodevalidatoricon" src="../../images/sra/StopSm.svg" alt="Webroot" />
+							<span id="keycodevalidatortext"></span>
+						</div>
+					</td>
+					<td></td>
+				</tr>
+				<tr id="newkeycode">
+					<td>
+						<label id="newkeycodelabel" for="newkeycodeinput">New Keycode:</label>
+						<input class="newkeycodeinput" id="newkeycodeinput" type="text" placeholder="xxxx-xxxx-xxxx-xxxx-xxxx"/>
+
+					</td>
+					<td>
+						<input class="bluebutton" id="validatebutton" type="button" title="Validate Now" value="Validate Now" disabled/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<a tabindex="0" id="needhelplink" title="needhelp"></a>
+					</td>
+					<td></td>
+				</tr>
+			</table>
+			<div id="validateOk"></div>
+			<div id="AutoOpenDisabledDiv2">
+				<input type="checkbox" id="AutoOpenDisabled2"><label id="AutoOpenDisabledText2" for="AutoOpenDisabled2">Do not show this again</label>
+			</div>
+		</div>
+
+		<!-- settings section -->
+		<div class="options" id="settingsIntegrated">
+			<picture>
+				<source srcset="../images/logo-dark.svg" media="(prefers-color-scheme: dark)">
+				<source srcset="../images/logo.svg" media="(prefers-color-scheme: light)">
+				<img class="wrt-logo" src="../images/logo.svg" alt="Webroot">
+			</picture>
+
+			<h3 id="optionstitleIN">Web Threat Shield Settings</h3>
+			<div class="integratedDiv">
+				<img class="yield" src="../images/sra/YieldSm.svg" alt="Note"/>
+				<div id="integratedmode">Web Threat Shield extension settings are managed by Webroot.</div>
+			</div>
+			<div id="integratedModeDetails">Settings for the Web Threat Shield extension are applied in the installed Webroot agent for unmanaged agents, or by policy in the management console for business users. The current settings are shown below.</div>
+			<hr />
+			<div class="integratedSettingsHeadline" id="integratedSettingsHeadline">CURRENT SETTINGS</div>
+			<div class="integratedSettings">
+				<input type="checkbox" id="Active" disabled checked>
+				<label id="labelActive" for="Active">Activate browser extensions</label>
+				<div class="subSettings">
+					<input type="checkbox" id="URLBlocking" disabled>
+					<label id="labelURLBlocking" for="URLBlocking">Block malicious websites</label><br />
+					<input type="checkbox" id="PhishBlocking" disabled>
+					<label id="labelPhishBlocking" for="PhishBlocking">Enable realtime anti-phishing</label><br />
+					<input type="checkbox" id="SearchAnnotation" disabled>
+					<label id="labelSearchAnnotation" for="SearchAnnotation">Show safety ratings when using search engines</label><br />
+				</div>
+				<div id="refreshNote">Changes made in the agent will be reflected here after browsing to a new page in another tab.</div>
+			</div>
+			<div class="integratedHowTo">
+				<div><a id="howtoModify" href="https://answers.webroot.com/Webroot/ukp.aspx?pid=12&app=vw&vw=1&login=1&solutionid=4075" target="_blank">How to modify these settings?</a></div>
+				<div><a id="howtoUninstall" href="">Uninstall this extension</a></div>
+			</div>
+		</div>
+</body>
+</html>

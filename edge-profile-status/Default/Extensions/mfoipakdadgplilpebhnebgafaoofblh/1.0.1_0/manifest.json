@@ -1,0 +1,16 @@
+{
+   "author": "Martin Frank",
+   "browser_action": {
+      "default_popup": "menu.html",
+      "default_title": "Video Speed Control"
+   },
+   "content_scripts": [ {
+      "js": [ "speed.js" ],
+      "matches": [ "\u003Call_urls>" ]
+   } ],
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnGsC7+rpWIEjwDRSo8ClnASvOe4mGllYhNCFqaWcGjTUkkP0y2/eqOqHzvh2KBIhc5tI6O+RcC8X5v63gy1k6iKxw0STncMbFC0S0bxJWPP3mt/FsQZ9CBajorepn72DSdPog7MOfZl/vymK8JovNAnkcazjlqpeGClryywMlfdb0wyW3OzypgsomUBPhuYwGtTFiYmRC9eHitF1V5vhmraMUSzZKto/tetBNZNHoRYAgRTBJmQOmdYGB72Nd+CJkr7uD0fNARxuG/84+shl4cq6Gj/8rc0ZjLOPm+NpONb+1lNOhPqXGighNQOjSUpkl6JE2DHoMoQIeLvAp+S7+QIDAQAB",
+   "manifest_version": 2,
+   "name": "Video Speed Control",
+   "update_url": "https://edge.microsoft.com/extensionwebstorebase/v1/crx",
+   "version": "1.0.1"
+}

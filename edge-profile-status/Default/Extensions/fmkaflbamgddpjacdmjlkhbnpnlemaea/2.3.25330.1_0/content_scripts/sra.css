@@ -1,0 +1,98 @@
+@import url('/helper_scripts/fonts.css');
+
+.compTitle{
+	min-height:60px;
+}
+/* dynamically added section with additional search results when clicking on some "People also ask"*/
+div.cvP2Ce div.yuRUbf div.WebrootDiv {
+	position:relative;
+	left:inherit;
+}
+div.yuRUbf div.WebrootDiv {
+	position: absolute;
+	left: -30px;
+}
+div.sw-Card__title div.WebrootDiv {
+	position:relative;
+	left:-30px;
+	top:10px;
+}
+div.WebrootDiv {
+	display: inline;
+	margin-right: 3px;
+}
+.V9tjod div.WebrootDiv {
+	transform: inherit;
+	z-index:20;
+}
+div.cvP2Ce div.yuRUbf div.WebrootDiv > img {
+	transform: inherit;
+}
+div.cvP2Ce div.yuRUbf div.WebrootDiv > span {
+	transform: inherit;
+}
+
+div.WebrootDiv > img{
+	height:19px;
+	width:19px;
+}
+/* WTS-1486 Chrome */
+div.yuRUbf div.WebrootDiv > img {
+	margin-top: 10px;
+	margin-left: 4px;
+}
+div.WebrootDiv > span{
+	visibility:hidden;
+	display:inline;
+	position:absolute;
+	border-radius:5px;
+	max-width:650px;
+	white-space:normal;
+	font-family:"Open Sans", sans-serif;
+	font-size:14px;
+	font-weight:normal;
+	z-index:99;
+	border:2px solid;
+	padding:10px 10px 10px 10px;
+}
+/* WTS-979, WTS-1034 Yahoo */
+.compTitle div.WebrootDiv > span{
+	top:0;
+}
+/* WTS-1360, WTS-1172 Google Search */
+#search div.WebrootDiv > span {
+	top: 0;
+	padding: 7px 10px 6px 10px;
+}
+div.WebrootDiv:hover > span{
+	visibility:visible;
+}
+div.WebrootDiv > span > pre{
+	text-align: left;
+	font-family: "Open Sans", sans-serif;
+	font-size: 14px;
+	font-weight: normal;
+	line-height: 14.4px;
+}
+div.WebrootDiv pre.webrootlogotitle{
+	font-weight:bolder;
+	display:inline;
+}
+div.WebrootDiv pre.webrootlogobody{
+	margin:5px 0px 0px 0px;
+}
+div.WebrootDiv > .green {
+	background-color:#e9f7e9;
+	border-color:#408740;
+	color:#54565b;
+}
+div.WebrootDiv > .yellow{
+	background-color:#fff1d1;
+	border-color:#ff9a22;
+	color:#54565b;
+}
+div.WebrootDiv > .red{
+	background-color:#fce8e8;
+	border-color:#a70000;
+	color:#54565b;
+} 

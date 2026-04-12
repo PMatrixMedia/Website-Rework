@@ -46,6 +46,10 @@ export default function GlobalMappingPage() {
 
     let destroyed = false;
 
+    // Ensure Cesium resolves its workers/assets from the copied public bundle in
+    // production as well as dev.
+    globalThis.CESIUM_BASE_URL = "/cesium";
+
     // With baseLayerPicker: false, Viewer ignores imageryProvider and defaults baseLayer to
     // ImageryLayer.fromWorldImagery() (Ion). Use baseLayer + ellipsoid terrain so nothing hits api.cesium.com.
     const osm = new Cesium.OpenStreetMapImageryProvider({

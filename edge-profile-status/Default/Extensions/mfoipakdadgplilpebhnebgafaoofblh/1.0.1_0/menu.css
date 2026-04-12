@@ -1,0 +1,16 @@
+h1 {
+  color: #d800ff;
+  padding: 2px;
+  min-width: 260px;
+  text-decoration: none;
+  display: table-cell;
+  font-size: 24px;
+}
+h2 {
+  color: #006cbe;
+  padding: 2px;
+  min-width: 260px;
+  text-decoration: none;
+  display: table-cell;
+  font-size: 16px;
+}
