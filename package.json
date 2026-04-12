@@ -1,7 +1,8 @@
 {
-  "name": "-g",
+  "name": "website-rework",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "yarn@4.13.0",
   "scripts": {
     "postinstall": "node scripts/copy-cesium.cjs",
     "dev": "next dev --webpack",
@@ -9,7 +10,8 @@
     "start": "next start",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "windows:reinstall": "powershell -ExecutionPolicy Bypass -File ./scripts/windows-reinstall.ps1"
   },
   "dependencies": {
     "@cesium/engine": "^23.0.1",

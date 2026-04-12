@@ -68,5 +68,89 @@ a {
   .asimovian-regular {
     @apply font-asimovian font-normal;
   }
+
+  /* Electrolize: loaded in layout.js (Google Fonts) */
+  .electrolize-regular {
+    font-family: "Electrolize", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  /* Shared chrome for PhaseNavBar across routes (~15% tighter than prior; icons unchanged below) */
+  .phase-nav-shell {
+    @apply sticky top-0 z-30 border-b border-white/10 bg-black/18 px-[2.55rem] py-[1.9125rem] shadow-[0_0_42px_-14px_rgba(249,115,22,0.18)] backdrop-blur-xl sm:px-[3.825rem];
+  }
+  .phase-nav-track {
+    @apply flex flex-wrap items-center gap-[1.9125rem] sm:gap-[2.55rem];
+  }
+  .phase-nav-track-between {
+    @apply w-full justify-between;
+  }
+  .phase-nav-item-wrap {
+    @apply inline-flex items-center;
+  }
+  .phase-nav-link {
+    @apply flex items-center gap-[0.6375rem] rounded-md px-[1.9125rem] py-[1.275rem] text-white/90 transition-all duration-200 ease-out hover:scale-[1.03] hover:bg-white/5 hover:text-white hover:shadow-[0_0_20px_-8px_rgba(249,115,22,0.35)];
+  }
+  .phase-nav-icon {
+    @apply size-[1.875rem] shrink-0 origin-center text-white/85 transition-transform duration-200 ease-out motion-reduce:transition-none;
+  }
+  .phase-nav-link:hover .phase-nav-icon {
+    @apply scale-[1.5] motion-reduce:scale-100;
+  }
+  .phase-nav-button-root {
+    @apply text-white hover:bg-white/10 hover:text-white;
+  }
+  /* About (and similar): match nav link hover chrome without resizing/scaling icons */
+  .phase-nav-social-anchor {
+    @apply flex items-center rounded-md p-2 text-white/90 transition-all duration-200 ease-out hover:bg-white/5 hover:text-white hover:shadow-[0_0_20px_-8px_rgba(249,115,22,0.35)];
+  }
+
+  /* About page: compact chrome; ~25% smaller than prior pass */
+  .about-page-nav .phase-nav-shell {
+    @apply !py-[0.84rem] !px-[1.125rem] sm:!px-[1.6875rem];
+  }
+  .about-page-nav .phase-nav-track {
+    @apply !gap-[0.84rem] sm:!gap-[1.125rem];
+  }
+  .about-page-nav .phase-nav-link {
+    @apply !gap-1 !rounded-md !px-[0.84rem] !py-2;
+  }
+  .about-page-nav .phase-nav-icon {
+    @apply !size-[1.40625rem];
+  }
+  .about-page-nav .phase-nav-social-anchor {
+    @apply !overflow-visible !rounded-md !p-1;
+  }
+  .about-page-nav .phase-nav-social-anchor img,
+  .about-page-nav .phase-nav-social-anchor svg {
+    @apply origin-center transition-transform duration-200 ease-out motion-reduce:transition-none;
+  }
+  .about-page-nav .phase-nav-social-anchor:hover img,
+  .about-page-nav .phase-nav-social-anchor:hover svg {
+    @apply scale-[1.5] motion-reduce:scale-100;
+  }
+
+  /* Blog listing + post: tighter chrome; icon size unchanged from prior blog pass */
+  .blog-page-nav .phase-nav-shell {
+    @apply !py-[1.143017578125rem] !px-[1.5240234375rem] sm:!px-[2.28603515625rem];
+  }
+  .blog-page-nav .phase-nav-track {
+    @apply !gap-[1.143017578125rem] sm:!gap-[1.5240234375rem];
+  }
+  .blog-page-nav .phase-nav-link {
+    @apply !gap-[0.381005859375rem] !px-[1.143017578125rem] !py-[0.76201171875rem];
+  }
+  .blog-page-nav .phase-nav-icon {
+    @apply !size-[1.318359375rem];
+  }
+
+  /* Features hub: full-bleed width (no horizontal shell padding); vertical chrome unchanged */
+  .features-page-nav .phase-nav-shell {
+    @apply !px-0 !py-[1.9985625rem];
+  }
+  .features-page-nav .phase-nav-link {
+    @apply !py-[1.332375rem];
+  }
 }
 /* Intro & sphere – responsive styles now use Tailwind utilities in components */

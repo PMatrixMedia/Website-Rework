@@ -2,7 +2,16 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-This project uses **Yarn** for dependencies (see `yarn.lock`). Do not use `npm install` — it can conflict with Yarn’s lockfile.
+This project uses **Yarn 4** (Berry) with `node_modules` (see `yarn.lock` and `.yarnrc.yml`). Do not use `npm install` — it can conflict with Yarn’s lockfile.
+
+**Yarn not found (Windows / PowerShell):** use Node’s Corepack (ships with Node 16.10+):
+
+```bash
+corepack enable
+corepack prepare yarn@4.13.0 --activate
+```
+
+If `corepack enable` fails with `EPERM`, run the terminal **as Administrator** once, or install Node with a user-writable prefix.
 
 Install and run the development server:
 
@@ -10,6 +19,24 @@ Install and run the development server:
 yarn install
 yarn dev
 ```
+
+**`EPERM` / “Access denied” on `tailwindcss-oxide*.node` (Windows):** Cursor/VS Code, a dev server, or antivirus often keeps that file open. Do this in order:
+
+1. **Fully quit the editor** — **File → Exit** (not only closing the window). In Task Manager, end any leftover **Node.js** or **Cursor** tasks.
+2. From the repo root, run the helper script (stops Node/esbuild, clears attributes, uses a robocopy workaround, then `yarn install`):
+
+   ```powershell
+   yarn windows:reinstall
+   ```
+
+   or:
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\scripts\windows-reinstall.ps1
+   ```
+
+3. If deletion still fails, open **PowerShell as Administrator**, `cd` to the repo, run `yarn windows:reinstall` again (the script will try `takeown` / `icacls` on the stuck file).
+4. Last resort: **reboot** (nothing left to lock the file), then run step 2, or add a **Windows Defender exclusion** for `E:\code\Website-Rework` (adjust path if yours differs).
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 

@@ -14,6 +14,7 @@ import {
   Dialog,
   TextField,
 } from "@radix-ui/themes";
+import { PhaseNavBar } from "@/app/Components/Nav/PhaseNavBar";
 import {
   HomeIcon,
   FileTextIcon,
@@ -22,7 +23,7 @@ import {
 } from "@radix-ui/react-icons";
 import "@radix-ui/themes/styles.css";
 
-const iconProps = { width: 24, height: 24 };
+const iconProps = { width: 22, height: 22 };
 
 export default function Post() {
   const router = useRouter();
@@ -96,34 +97,17 @@ export default function Post() {
   return (
     <Theme appearance="dark" accentColor="orange" grayColor="slate" radius="medium">
       <div className="min-h-screen bg-slate-950 text-slate-100">
-        <Box className="border-b border-white/10 bg-white/5 px-4 py-3 sm:px-6 sm:py-4">
-          <Flex gap="6" align="center" wrap="wrap">
-            <Button variant="ghost" size="2" asChild className="text-slate-100 hover:bg-white/10">
-              <Link href="/" className="flex items-center gap-2">
-                <HomeIcon {...iconProps} />
-                <Text>Home</Text>
-              </Link>
-            </Button>
-            <Button variant="ghost" size="2" asChild className="text-slate-100 hover:bg-white/10">
-              <Link href="/blog" className="flex items-center gap-2">
-                <FileTextIcon {...iconProps} />
-                <Text>Blog</Text>
-              </Link>
-            </Button>
-            <Button variant="ghost" size="2" asChild className="text-slate-100 hover:bg-white/10">
-              <Link href="/features" className="flex items-center gap-2">
-                <GearIcon {...iconProps} />
-                <Text>Features</Text>
-              </Link>
-            </Button>
-            <Button variant="ghost" size="2" asChild className="text-slate-100 hover:bg-white/10">
-              <Link href="/contact" className="flex items-center gap-2">
-                <EnvelopeClosedIcon {...iconProps} />
-                <Text>Contact</Text>
-              </Link>
-            </Button>
-          </Flex>
-        </Box>
+        <div className="blog-page-nav">
+          <PhaseNavBar
+            labelTextSize="5"
+            items={[
+              { key: "home", href: "/", label: "Home", Icon: HomeIcon },
+              { key: "blog", href: "/blog", label: "Blog", Icon: FileTextIcon },
+              { key: "features", href: "/features", label: "Features", Icon: GearIcon },
+              { key: "contact", href: "/contact", label: "Contact", Icon: EnvelopeClosedIcon },
+            ]}
+          />
+        </div>
 
         <div className="max-w-3xl mx-auto px-4 py-12 sm:px-6">
           <Link

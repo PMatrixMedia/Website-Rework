@@ -17,6 +17,7 @@ import {
 } from "@radix-ui/themes";
 import { HomeIcon, EnvelopeClosedIcon } from "@radix-ui/react-icons";
 import "@radix-ui/themes/styles.css";
+import { PhaseNavBar } from "@/app/Components/Nav/PhaseNavBar";
 
 const iconProps = { width: 24, height: 24 };
 
@@ -115,31 +116,12 @@ export default function Contact() {
   return (
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
       <div ref={contactRootRef}>
-      <Box
-        data-contact-anim
-        className="bg-slate-800 px-4 py-3 sm:px-6 sm:py-4"
-      >
-        <Flex gap="6" align="center" wrap="wrap">
-          <Button variant="ghost" size="2" asChild>
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-white hover:text-white"
-            >
-              <HomeIcon {...iconProps} />
-              <Text>Home</Text>
-            </Link>
-          </Button>
-          <Button variant="ghost" size="2" asChild>
-            <Link
-              href="/main"
-              className="flex items-center gap-2 text-white hover:text-white"
-            >
-              <EnvelopeClosedIcon {...iconProps} />
-              <Text>Main</Text>
-            </Link>
-          </Button>
-        </Flex>
-      </Box>
+      <PhaseNavBar
+        items={[
+          { key: "home", href: "/", label: "Home", Icon: HomeIcon },
+          { key: "main", href: "/main", label: "Main", Icon: EnvelopeClosedIcon },
+        ]}
+      />
 
       <Box className="min-h-screen bg-slate-950 px-4 py-12 sm:px-6">
         <Container size="3" className="mx-auto max-w-xl">

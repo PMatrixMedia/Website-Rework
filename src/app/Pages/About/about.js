@@ -2,8 +2,9 @@
 
 import React, { useRef, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import gsap from "gsap";
+import { HomeIcon } from "@radix-ui/react-icons";
+import { PhaseNavBar, PhaseNavLink } from "@/app/Components/Nav/PhaseNavBar";
 import {
   Theme,
   Box,
@@ -22,39 +23,42 @@ import avatarImg from "./avatar(2).jpg";
 const BLOCKQUOTE_TEXT =
   "Creative React Developer with 8 years designing useful, approachable user interfaces. Knowledgeable on all aspects of Facebook's design best practices and emerging UI development techniques. Skilled at connecting exceptional assets with users via creative UI frameworks and careful user experience optimization. Organized and dependable candidate successful at managing multiple priorities with a positive attitude. Willingness to take on added responsibilities to meet team goals.";
 
-const HomeIcon = () => (
-  <svg
-    width="38"
-    height="38"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="text-white"
-  >
-    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-    <polyline points="9 22 9 12 15 12 15 22" />
-  </svg>
-);
-
 const LinkedInIcon = () => (
   <svg
-    width="38"
-    height="38"
+    width="18"
+    height="18"
     viewBox="0 0 24 24"
     fill="currentColor"
     aria-hidden="true"
-    className="text-white"
+    className="shrink-0 text-white/85"
   >
     <path d="M20.45 20.45h-3.56v-5.58c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z" />
   </svg>
 );
 
+/** Inline mark like LinkedInIcon — no static image URL; hover scale targets `svg` in globals */
+const CodeSandboxIcon = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.35"
+    strokeLinejoin="round"
+    strokeLinecap="round"
+    aria-hidden="true"
+    className="shrink-0 text-white/85"
+  >
+    <path d="M12 3 20 7.5v9L12 21l-8-4.5v-9L12 3z" />
+    <path d="M4 7.5 12 12l8-4.5M12 12v9" />
+  </svg>
+);
+
+const socialLinkClass = "phase-nav-social-anchor";
+
 export default function About() {
   const headingRef = useRef(null);
-  const navRef = useRef(null);
   const cardRef = useRef(null);
   const blockquoteRef = useRef(null);
   const wordRefs = useRef([]);
@@ -67,18 +71,6 @@ export default function About() {
           y: -20,
           duration: 0.9,
           ease: "power2.out",
-        });
-      }
-
-      const navChildren = navRef.current ? Array.from(navRef.current.children) : [];
-      if (navChildren.length) {
-        gsap.from(navChildren, {
-          opacity: 0,
-          y: -80,
-          duration: 0.8,
-          stagger: 0.1,
-          ease: "bounce.out",
-          delay: 0.3,
         });
       }
 
@@ -112,79 +104,62 @@ export default function About() {
 
   return (
     <Theme appearance="dark" accentColor="gray" grayColor="slate">
-      <Box py="0"
-             style={{backgroundColor: "gray", justifyContent: "center", items: "center", justifyItems: "center"}}>
-            <Heading as="h3" ref={headingRef}>
-              About Me
-            </Heading>
-      </Box>
-
-      {/* Nav: Home left, other icons right */}
-      <div style={{ backgroundColor: "gray", py:-4}}>
-          <Flex
-            items="center"
-            ref={navRef}
-            justify="between"
-            wrap="nowrap"
-            className="w-full "
-          >
-            <div className="hover:scale-120,ml-4, transition-opacity, hover:opacity-80">
-            <Link
-              href="/"
-              aria-label="Home"
-              className="shrink-0 transition-opacity hover:opacity-80 [&_svg]:text-white"
-            >
-              <HomeIcon />
-            </Link>
+      <div className="about-page-nav sticky top-0 z-30 border-b border-white/10 bg-black/18 shadow-[0_0_42px_-14px_rgba(249,115,22,0.18)] backdrop-blur-xl">
+        <div className="border-b border-white/10 px-[1.125rem] py-2 sm:px-[1.6875rem]">
+          <Heading as="h3" ref={headingRef} size="4" className="text-center text-white">
+            About Me
+          </Heading>
+        </div>
+        <PhaseNavBar
+          className="!static rounded-none border-0 shadow-none"
+          justify="between"
+          leading={
+            <PhaseNavLink href="/" Icon={HomeIcon} iconOnly aria-label="Home" />
+          }
+          trailing={
+            <div className="ml-auto flex flex-wrap items-center gap-4 sm:gap-5">
+              <span data-phase-nav-item className="phase-nav-item-wrap">
+                <a
+                  href="https://github.com/PMatrixMedia"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="GitHub"
+                  className={socialLinkClass}
+                >
+                  <Image
+                    src="/images/github.png"
+                    alt=""
+                    width={24}
+                    height={24}
+                    className="brightness-0 invert"
+                  />
+                </a>
+              </span>
+              <span data-phase-nav-item className="phase-nav-item-wrap">
+                <a
+                  href="https://www.linkedin.com/in/christopher-faison-1b7b6948"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                  className={socialLinkClass}
+                >
+                  <LinkedInIcon />
+                </a>
+              </span>
+              <span data-phase-nav-item className="phase-nav-item-wrap">
+                <a
+                  href="https://codesandbox.io/u/PMatrixMedia"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="CodeSandbox"
+                  className={socialLinkClass}
+                >
+                  <CodeSandboxIcon />
+                </a>
+              </span>
             </div>
-            <div className="flex gap-7" >
-              <div className="hover:scale-120">
-              <a
-                href="https://github.com/PMatrixMedia"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="transition-opacity hover:opacity-80 hover:scale-120"
-              >
-                <Image
-                  src="/Images/github.png"
-                  alt="GitHub"
-                  width={38}
-                  height={38}
-                  style={{ filter: "brightness(0) invert(1)" }}
-                />
-              </a>
-              </div>
-              <div className="hover:scale-120">
-              <a
-                href="https://www.linkedin.com/in/christopher-faison-1b7b6948"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="transition-opacity hover:opacity-80 hover:scale-120"
-              >
-                <LinkedInIcon />
-              </a>
-              </div>
-              <div className="hover:scale-120">
-              <a
-                href="https://codesandbox.io/u/PMatrixMedia"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="CodeSandbox"
-                className="transition-opacity hover:opacity-80 hover:scale-120"
-              >
-                <Image
-                  src="/Images/codesandbox-logo.png"
-                  alt="CodeSandbox"
-                  width={187}
-                  height={50}
-    
-                />
-              </a>
-              </div>
-            </div>
-        </Flex>
+          }
+        />
       </div>
 
       {/* Avatar card right above the paragraph */}
@@ -212,7 +187,7 @@ export default function About() {
       <div className="relative bg-black py-8 px-6 min-h-[50vh] sm:px-8">
         <Flex justify="center">
           <Container size="3" className="max-w-[1000px]">
-            <Blockquote ref={blockquoteRef} size="7">
+            <Blockquote ref={blockquoteRef} size="7" className="electrolize-regular">
               {words.map((word, i) => (
                 <span
                   key={i}

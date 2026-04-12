@@ -3,17 +3,18 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import gsap from "gsap";
+import { PhaseNavBar } from "@/app/Components/Nav/PhaseNavBar";
 import {
   HomeIcon,
   FileTextIcon,
   GearIcon,
   EnvelopeClosedIcon,
 } from "@radix-ui/react-icons";
-import { Theme, Card, Badge, Text, Heading, Box, Flex, Avatar, Button, Separator, Select } from "@radix-ui/themes";
+import { Theme, Card, Badge, Text, Heading, Box, Flex, Avatar, Separator, Select } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import avatarImg from "../About/avatar(2).jpg";
 
-const iconProps = { width: 24, height: 24 };
+const iconProps = { width: 22, height: 22 };
 
 const BlogCard = ({ post }) => (
   <Card size="2" className="overflow-hidden transition-all hover:shadow-xl hover:shadow-slate-500/10 hover:-translate-y-0.5">
@@ -80,7 +81,6 @@ function parseDate(post) {
 export default function Blog({ posts = [] }) {
   const [sortOrder, setSortOrder] = useState("newest");
   const gridRef = useRef(null);
-  const navRef = useRef(null);
   const postsWithAvatar = addAvatarToPosts(posts);
 
   const sortedPosts = useMemo(() => {
@@ -93,16 +93,6 @@ export default function Blog({ posts = [] }) {
     });
     return copy;
   }, [postsWithAvatar, sortOrder]);
-
-  useEffect(() => {
-    if (!navRef.current) return;
-    const items = navRef.current.querySelectorAll(".nav-item");
-    gsap.fromTo(
-      items,
-      { opacity: 0, y: -40 },
-      { opacity: 1, y: 0, duration: 0.5, stagger: 0.5, ease: "power2.out" }
-    );
-  }, []);
 
   useEffect(() => {
     if (!gridRef.current || sortedPosts.length === 0) return;
@@ -124,42 +114,17 @@ export default function Blog({ posts = [] }) {
   return (
     <Theme appearance="inherit" accentColor="gray" grayColor="slate">
       <div className="min-h-screen bg-(--background) text-(--foreground)">
-        <Box className="border-b border-black/10 bg-black/5 px-4 py-3 dark:border-white/10 dark:bg-white/5 sm:px-6 sm:py-4">
-          <Flex ref={navRef} gap="6" align="center" wrap="wrap">
-            <span className="nav-item">
-              <Button variant="ghost" size="2" asChild>
-                <Link href="/" className="flex items-center gap-2">
-                  <HomeIcon {...iconProps} />
-                  <Text>Home</Text>
-                </Link>
-              </Button>
-            </span>
-            <span className="nav-item">
-              <Button variant="ghost" size="2" asChild>
-                <Link href="/blog" className="flex items-center gap-2">
-                  <FileTextIcon {...iconProps} />
-                  <Text>Blog</Text>
-                </Link>
-              </Button>
-            </span>
-            <span className="nav-item">
-              <Button variant="ghost" size="2" asChild>
-                <Link href="/features" className="flex items-center gap-2">
-                  <GearIcon {...iconProps} />
-                  <Text>Features</Text>
-                </Link>
-              </Button>
-            </span>
-            <span className="nav-item">
-              <Button variant="ghost" size="2" asChild>
-                <Link href="/contact" className="flex items-center gap-2">
-                  <EnvelopeClosedIcon {...iconProps} />
-                  <Text>Contact</Text>
-                </Link>
-              </Button>
-            </span>
-          </Flex>
-        </Box>
+        <div className="blog-page-nav">
+          <PhaseNavBar
+            labelTextSize="5"
+            items={[
+              { key: "home", href: "/", label: "Home", Icon: HomeIcon },
+              { key: "blog", href: "/blog", label: "Blog", Icon: FileTextIcon },
+              { key: "features", href: "/features", label: "Features", Icon: GearIcon },
+              { key: "contact", href: "/contact", label: "Contact", Icon: EnvelopeClosedIcon },
+            ]}
+          />
+        </div>
         <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 sm:py-12 md:py-16">
           <Flex direction="column" gap="6" mb="8">
             <Link href="/main" className="text-sm flex items-center gap-2 opacity-70 hover:opacity-100 transition-opacity">

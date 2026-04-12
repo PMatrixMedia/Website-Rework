@@ -1,37 +1,19 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef } from "react";
-import Link from "next/link";
 import gsap from "gsap";
+import { PhaseNavBar } from "@/app/Components/Nav/PhaseNavBar";
 import * as Cesium from "cesium";
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import {
   Theme,
   Box,
-  Flex,
   Text,
   Container,
-  Button,
   Strong,
 } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
-
-const iconProps = { width: 24, height: 24 };
-
-function NavButton({ href, icon: Icon, children }) {
-  return (
-    <Button variant="ghost" size="2" asChild className="text-white hover:bg-slate-900 hover:text-white">
-      <Link
-        href={href}
-        className="flex items-center gap-2 px-4 py-2 transition-all duration-200 ease-out hover:scale-110"
-      >
-        {Icon && <Icon {...iconProps} />}
-        {children}
-      </Link>
-    </Button>
-  );
-}
 
 export default function GlobalMappingPage() {
   const viewerWrapRef = useRef(null);
@@ -232,17 +214,20 @@ export default function GlobalMappingPage() {
       grayColor="slate"
       radius="medium"
     >
-      <Box py="4" style={{ backgroundColor: "gray" }}>
-        <Flex gap="5" align="center" wrap="wrap" className="sm:gap-6 px-4 sm:px-6">
-          <div className="nav-item hover:scale-120">
-            <NavButton href="/main" icon={ArrowLeftIcon}>
+      <PhaseNavBar
+        items={[
+          {
+            key: "main",
+            href: "/main",
+            Icon: ArrowLeftIcon,
+            label: (
               <Text size="6">
                 <Strong>Main</Strong>
               </Text>
-            </NavButton>
-          </div>
-        </Flex>
-      </Box>
+            ),
+          },
+        ]}
+      />
 
       <Container
         size="4"
