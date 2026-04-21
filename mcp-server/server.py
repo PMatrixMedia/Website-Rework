@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-HASURA_URL = os.getenv("HASURA_GRAPHQL_URL", "http://localhost:8080/v1/graphql")
+HASURA_URL = os.getenv("HASURA_GRAPHQL_URL", "https://model-honeybee-77.hasura.app/v1/graphql")
 HASURA_ADMIN_SECRET = os.getenv("HASURA_GRAPHQL_ADMIN_SECRET", "devsecret")
 
 mcp = FastMCP(

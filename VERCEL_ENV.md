@@ -44,7 +44,7 @@ Use this URI in **Hasura** as the database URL (Hasura Cloud or self-hosted). Th
 
 | Name | Value | Notes |
 | ---- | ----- | ----- |
-| `HASURA_GRAPHQL_ENDPOINT` | `https://<your-project>.hasura.app/v1/graphql` | Must match the GraphQL endpoint Hasura serves. |
+| `HASURA_GRAPHQL_ENDPOINT` | `https://model-honeybee-77.hasura.app/v1/graphql` | Must match the GraphQL endpoint Hasura serves. |
 | `HASURA_ADMIN_SECRET` | Admin secret from Hasura | Used server-side only; never `NEXT_PUBLIC_*`. |
 
 ### Required for contact email (Resend path)
@@ -66,7 +66,7 @@ Use this URI in **Hasura** as the database URL (Hasura Cloud or self-hosted). Th
 
 Configure an **Event trigger** on `contact_submissions` that POSTs to:
 
-`https://<your-deployment>.vercel.app/api/webhooks/hasura/contact`
+`https://model-honeybee-77.hasura.app/v1/graphql/webhooks/hasura/contact`
 
 Example (replace host with your deployment): see [Vercel deployment URLs](https://vercel.com/docs/deployments/overview).
 
