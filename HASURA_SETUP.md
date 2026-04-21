@@ -57,7 +57,7 @@ docker compose up -d
 If GraphQL/Postgres returns **`null value in column "id"`** or **`violates not-null constraint`** on insert:
 
 1. **Fix the database** (recommended): run `backend/migrations/fix_contact_submissions_id.sql` on your Postgres so `id` has a proper `DEFAULT` / sequence.
-2. Re-test `/api/contact`; submissions now require Hasura persistence before email notification.
+2. Re-test `/api/contact`; if Hasura fails, the API falls back to Resend email (`RESEND_API_KEY`) and, in local dev, to a file log.
 
 In Hasura **Permissions** for inserts (non-admin roles), only allow columns **`name`**, **`email`**, **`message`** — do **not** set column presets for **`id`** (let the database default apply).
 

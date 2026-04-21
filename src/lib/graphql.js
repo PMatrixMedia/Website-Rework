@@ -205,10 +205,12 @@ export async function createPostViaGraphql({ title, excerpt, content }) {
     throw new Error("No author found in Hasura. Seed the database first.");
   }
 
+  const resolvedContent = content || "";
+  const resolvedExcerpt = excerpt || resolvedContent.slice(0, 120) || "New update";
   const data = await graphqlRequest(HASURA_CREATE_POST_MUTATION, {
     title: title || "New Post",
-    excerpt: excerpt || "",
-    content: content || "",
+    excerpt: resolvedExcerpt,
+    content: resolvedContent,
     author_id: author.id,
   });
   const post = data?.insert_posts_one;

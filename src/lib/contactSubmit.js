@@ -1,13 +1,17 @@
 /**
- * Shared contact submission helpers: Hasura and Resend email.
+ * Shared contact submission helpers: Hasura, Resend email, optional local file log.
  */
 
+import { mkdirSync, appendFileSync, existsSync } from "fs";
+import path from "path";
 import {
   graphqlRequest,
   HASURA_INSERT_CONTACT_MUTATION,
   hasuraConfigured,
 } from "@/lib/graphql";
 import { Resend } from "resend";
+
+export { hasuraConfigured };
 
 const DEFAULT_TO_EMAIL = "info@phasematrixmedia.com";
 
@@ -101,4 +105,32 @@ export async function sendContactViaResend({ name, email, message }) {
   }
 
   return { ok: true, source: "resend" };
+}
+
+const DATA_DIR = path.join(process.cwd(), "data");
+const CONTACT_LOG = path.join(DATA_DIR, "contact-submissions.jsonl");
+
+/**
+ * Append one JSON line for local dev when DB/email unavailable (not for Vercel).
+ */
+export function appendContactLocalLog({ name, email, message }) {
+  if (process.env.VERCEL) {
+    return { ok: false, error: "File log not available on Vercel" };
+  }
+  try {
+    if (!existsSync(DATA_DIR)) {
+      mkdirSync(DATA_DIR, { recursive: true });
+    }
+    const line =
+      JSON.stringify({
+        name: name || null,
+        email,
+        message,
+        at: new Date().toISOString(),
+      }) + "\n";
+    appendFileSync(CONTACT_LOG, line, "utf8");
+    return { ok: true, source: "file" };
+  } catch (e) {
+    return { ok: false, error: e?.message || "Failed to write local log" };
+  }
 }
