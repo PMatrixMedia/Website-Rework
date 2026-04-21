@@ -4,7 +4,7 @@
     "name": "contact_form_email",
     "table": { "name": "contact_submissions", "schema": "public" },
     "source": "default",
-    "webhook": "https://model-honeybee-77.hasura.app/v1/graphql/webhooks/hasura/contact",
+    "webhook": "https://REPLACE_WITH_YOUR_APP_URL/api/webhooks/hasura/contact",
     "insert": {
       "columns": "*"
     }

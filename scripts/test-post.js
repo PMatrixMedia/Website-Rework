@@ -1,7 +1,7 @@
 /**
  * Create a test post and verify it writes to the database.
  * Run: node --experimental-vm-modules scripts/test-post.js
- * Or with env: DATABASE_URL=... node scripts/test-post.js
+ * Requires HASURA_GRAPHQL_ENDPOINT and HASURA_ADMIN_SECRET.
  */
 import { config } from "dotenv";
 import path from "path";
@@ -16,8 +16,8 @@ config({ path: path.join(__dirname, "..", ".env") });
 async function main() {
   const { addEntry, getEntries } = await import("../src/lib/blogEntries.js");
 
-  if (!process.env.DATABASE_URL && !process.env.PGHOST) {
-    console.error("Error: Set DATABASE_URL or PGHOST in .env.local");
+  if (!process.env.HASURA_GRAPHQL_ENDPOINT || !process.env.HASURA_ADMIN_SECRET) {
+    console.error("Error: Set HASURA_GRAPHQL_ENDPOINT and HASURA_ADMIN_SECRET in .env.local");
     process.exit(1);
   }
 

@@ -3,7 +3,12 @@ import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
 const eslintConfig = [
   ...nextCoreWebVitals,
   {
-    ignores: ["public/cesium/**"],
+    ignores: [
+      ".yarn/**",
+      "edge-profile/**",
+      "edge-profile-status/**",
+      "public/cesium/**",
+    ],
   },
 ];
 

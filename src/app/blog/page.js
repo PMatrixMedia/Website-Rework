@@ -1,6 +1,5 @@
 import Blog from "../Pages/Blog/blog";
 import { getPostsFromGraphql } from "@/lib/graphql";
-import { getEntries } from "@/lib/blogEntries";
 
 export const metadata = {
   title: "Blog | PhaseMatrix Media",
@@ -38,16 +37,10 @@ const FALLBACK_POSTS = [
 
 async function getPosts() {
   try {
-    const dbPosts = await getEntries();
-    if (dbPosts.length > 0) return dbPosts;
+    const posts = await getPostsFromGraphql({ next: { revalidate: 60 } });
+    if (posts?.length > 0) return posts;
   } catch (e) {
-    console.error("getPosts DB error:", e);
-  }
-  try {
-    const graphqlPosts = await getPostsFromGraphql({ next: { revalidate: 60 } });
-    if (graphqlPosts?.length > 0) return graphqlPosts;
-  } catch {
-    // GraphQL fallback failed
+    console.error("getPosts Hasura error:", e);
   }
   return FALLBACK_POSTS;
 }

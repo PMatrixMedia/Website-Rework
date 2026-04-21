@@ -23,7 +23,7 @@ Example shape:
 postgresql://<user>:<password>@<endpoint>/<database>?sslmode=require
 ```
 
-Use this URI in **Hasura** as the database URL (Hasura Cloud or self-hosted), not necessarily as a Vercel var, unless you add server code that connects with `pg` via `DATABASE_URL` (see optional variables below).
+Use this URI in **Hasura** as the database URL (Hasura Cloud or self-hosted). The Next.js app should talk to Hasura through `HASURA_GRAPHQL_ENDPOINT`, not to Postgres directly.
 
 ### Run the database schema
 
@@ -51,7 +51,7 @@ Use this URI in **Hasura** as the database URL (Hasura Cloud or self-hosted), no
 
 | Name | Value | Notes |
 | ---- | ----- | ----- |
-| `RESEND_API_KEY` | Resend API key | Needed for `/api/contact` email and the Hasura contact webhook email. |
+| `RESEND_API_KEY` | Resend API key | Needed for the Hasura contact webhook email. |
 
 ### Optional
 
@@ -59,15 +59,12 @@ Use this URI in **Hasura** as the database URL (Hasura Cloud or self-hosted), no
 | ---- | ------- |
 | `CONTACT_FROM_EMAIL` | Verified sender in Resend (e.g. `PhaseMatrix <contact@yourdomain.com>`). If unset, code falls back to Resend’s onboarding sender where applicable. |
 | `CONTACT_TO_EMAIL` | Inbox for contact notifications from `/api/contact` when using Resend (defaults to `info@phasematrixmedia.com` in code if unset). |
-| `NEXT_PUBLIC_GRAPHQL_URL` | Overrides the GraphQL URL on the client when set; server code prefers `HASURA_GRAPHQL_ENDPOINT`. See `src/lib/graphql.js`. |
-| `NEXT_PUBLIC_API_URL` | Legacy Flask-style API base URL when not using Hasura for GraphQL. |
-| `DATABASE_URL` | Neon pooled URI if you use `src/lib/db.js` with `pg` directly (currently unused by shipped routes; safe to add for future features). |
 
 ---
 
 ## 3. Hasura event trigger (contact emails)
 
-If inserts go to Hasura first, configure an **Event trigger** on `contact_submissions` that POSTs to:
+Configure an **Event trigger** on `contact_submissions` that POSTs to:
 
 `https://<your-deployment>.vercel.app/api/webhooks/hasura/contact`
 

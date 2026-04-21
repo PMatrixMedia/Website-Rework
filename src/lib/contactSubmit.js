@@ -1,10 +1,12 @@
 /**
- * Shared contact submission helpers: Hasura, Resend email, optional local file log.
+ * Shared contact submission helpers: Hasura and Resend email.
  */
 
-import { mkdirSync, appendFileSync, existsSync } from "fs";
-import path from "path";
-import { HASURA_INSERT_CONTACT_MUTATION } from "@/lib/graphql";
+import {
+  graphqlRequest,
+  HASURA_INSERT_CONTACT_MUTATION,
+  hasuraConfigured,
+} from "@/lib/graphql";
 import { Resend } from "resend";
 
 const DEFAULT_TO_EMAIL = "info@phasematrixmedia.com";
@@ -28,58 +30,28 @@ function escapeHtml(value) {
   });
 }
 
-export function getHasuraConfig() {
-  const endpoint =
-    process.env.HASURA_GRAPHQL_ENDPOINT ||
-    process.env.NEXT_PUBLIC_GRAPHQL_URL;
-  const adminSecret = process.env.HASURA_ADMIN_SECRET;
-  return { endpoint, adminSecret };
-}
-
-export function hasuraConfigured() {
-  const { endpoint, adminSecret } = getHasuraConfig();
-  return Boolean(endpoint && adminSecret);
-}
-
 /**
  * @returns {{ ok: true, id: number, source: 'hasura' } | { ok: false, error: string }}
  */
 export async function submitToHasura({ name, email, message }) {
-  const { endpoint, adminSecret } = getHasuraConfig();
-  if (!endpoint || !adminSecret) {
+  if (!hasuraConfigured()) {
     return { ok: false, error: "Hasura not configured" };
   }
 
-  const res = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-hasura-admin-secret": adminSecret,
-    },
-    body: JSON.stringify({
-      query: HASURA_INSERT_CONTACT_MUTATION,
-      variables: { name: name || null, email, message },
-    }),
-  });
-
-  let json;
   try {
-    json = await res.json();
-  } catch {
-    return { ok: false, error: "Invalid response from Hasura" };
+    const data = await graphqlRequest(HASURA_INSERT_CONTACT_MUTATION, {
+      name: name || null,
+      email,
+      message,
+    });
+    const row = data?.insert_contact_submissions_one;
+    if (!row?.id) {
+      return { ok: false, error: "Failed to save submission." };
+    }
+    return { ok: true, id: row.id, source: "hasura" };
+  } catch (e) {
+    return { ok: false, error: e?.message || "Hasura submission failed" };
   }
-
-  if (json.errors && json.errors.length > 0) {
-    const msg = json.errors[0]?.message || "GraphQL error";
-    return { ok: false, error: msg };
-  }
-
-  const data = json.data?.insert_contact_submissions_one;
-  if (!data?.id) {
-    return { ok: false, error: "Failed to save submission." };
-  }
-
-  return { ok: true, id: data.id, source: "hasura" };
 }
 
 /**
@@ -129,32 +101,4 @@ export async function sendContactViaResend({ name, email, message }) {
   }
 
   return { ok: true, source: "resend" };
-}
-
-const DATA_DIR = path.join(process.cwd(), "data");
-const CONTACT_LOG = path.join(DATA_DIR, "contact-submissions.jsonl");
-
-/**
- * Append one JSON line for local dev when DB/email unavailable (not for Vercel).
- */
-export function appendContactLocalLog({ name, email, message }) {
-  if (process.env.VERCEL) {
-    return { ok: false, error: "File log not available on Vercel" };
-  }
-  try {
-    if (!existsSync(DATA_DIR)) {
-      mkdirSync(DATA_DIR, { recursive: true });
-    }
-    const line =
-      JSON.stringify({
-        name: name || null,
-        email,
-        message,
-        at: new Date().toISOString(),
-      }) + "\n";
-    appendFileSync(CONTACT_LOG, line, "utf8");
-    return { ok: true, source: "file" };
-  } catch (e) {
-    return { ok: false, error: e?.message || "Failed to write local log" };
-  }
 }

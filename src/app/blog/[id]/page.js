@@ -1,17 +1,16 @@
 import BlogPost from "../../Pages/Blog/BlogPost";
 import { getPostFromGraphql } from "@/lib/graphql";
-import { getEntryById } from "@/lib/blogEntries";
 
 export const dynamic = "force-dynamic";
 
 async function getPost(id) {
   const numId = parseInt(id, 10);
-  const apiPost = await getEntryById(numId);
-  if (apiPost) return apiPost;
+  if (!Number.isFinite(numId)) return null;
   try {
     const post = await getPostFromGraphql(numId, { next: { revalidate: 60 } });
     return post || null;
-  } catch {
+  } catch (e) {
+    console.error("getPost Hasura error:", e);
     return null;
   }
 }

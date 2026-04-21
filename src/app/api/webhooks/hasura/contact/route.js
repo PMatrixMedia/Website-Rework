@@ -1,8 +1,6 @@
-import { Resend } from "resend";
+import { sendContactViaResend } from "@/lib/contactSubmit";
 
 export const dynamic = "force-dynamic";
-
-const CONTACT_TO_EMAIL = "info@phasematrixmedia.com";
 
 /**
  * Hasura Event Trigger webhook: when a row is inserted into contact_submissions,
@@ -39,47 +37,11 @@ export async function POST(request) {
       );
     }
 
-    const apiKey = process.env.RESEND_API_KEY;
-    if (!apiKey) {
-      console.error("Hasura contact webhook: RESEND_API_KEY not set.");
+    const mail = await sendContactViaResend({ name, email, message });
+    if (!mail.ok) {
+      console.error("Hasura contact webhook Resend error:", mail.error);
       return Response.json(
-        { error: "Email not configured" },
-        { status: 503 }
-      );
-    }
-
-    const from =
-      process.env.CONTACT_FROM_EMAIL ||
-      "PhaseMatrix Contact <onboarding@resend.dev>";
-    const resend = new Resend(apiKey);
-    const subject = name ? `Contact form: ${name}` : "Contact form submission";
-    const text = [
-      message,
-      "",
-      "---",
-      `From: ${name || "(not provided)"}`,
-      `Reply-To: ${email}`,
-    ].join("\n");
-    const html = [
-      `<p>${message.replace(/\n/g, "<br>")}</p>`,
-      "<hr>",
-      `<p><strong>From:</strong> ${name || "(not provided)"}<br>`,
-      `<strong>Reply-To:</strong> <a href="mailto:${email}">${email}</a></p>`,
-    ].join("");
-
-    const { error } = await resend.emails.send({
-      from,
-      to: [CONTACT_TO_EMAIL],
-      replyTo: email,
-      subject,
-      text,
-      html,
-    });
-
-    if (error) {
-      console.error("Hasura contact webhook Resend error:", error);
-      return Response.json(
-        { error: error?.message ?? "Failed to send email" },
+        { error: mail.error ?? "Failed to send email" },
         { status: 500 }
       );
     }

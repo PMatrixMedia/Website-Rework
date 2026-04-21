@@ -5,6 +5,7 @@ Hasura provides an auto-generated GraphQL API over your Supabase PostgreSQL data
 ## Setup
 
 1. **Copy env file**
+
    ```bash
    cp .env.example .env
    ```
@@ -14,11 +15,12 @@ Hasura provides an auto-generated GraphQL API over your Supabase PostgreSQL data
    - Use **Session pooler** URI: `postgres://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres`
 
 3. **Start Hasura**
+
    ```bash
    docker compose up -d
    ```
 
-4. **Open Console** at http://localhost:8080/console
+4. **Open Console** at <http://localhost:8080/console>
    - Enter admin secret from `.env` (default: `devsecret`)
 
 5. **Connect database** (if not auto-connected)
@@ -31,13 +33,14 @@ Hasura provides an auto-generated GraphQL API over your Supabase PostgreSQL data
 
 ## GraphQL Endpoint
 
-- **Local:** http://localhost:8080/v1/graphql
+- **Local:** <http://localhost:8080/v1/graphql>
 - **Headers:** `x-hasura-admin-secret: devsecret` (for admin access)
 
 ## Frontend
 
-Set in `.env.local`:
-```
-NEXT_PUBLIC_GRAPHQL_URL=http://localhost:8080/v1/graphql
-NEXT_PUBLIC_HASURA_ADMIN_SECRET=devsecret
+Set in the Next.js `.env.local`:
+
+```env
+HASURA_GRAPHQL_ENDPOINT=https://model-honeybee-77.hasura.app/v1/graphql
+HASURA_ADMIN_SECRET=devsecret
 ```

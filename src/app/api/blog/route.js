@@ -1,9 +1,9 @@
-import { getEntries, addEntry } from "@/lib/blogEntries";
+import { createPostViaGraphql, getPostsFromGraphql } from "@/lib/graphql";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const posts = await getEntries();
+  const posts = await getPostsFromGraphql({ cache: "no-store" });
   return Response.json({ posts });
 }
 
@@ -11,7 +11,7 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const { title = "New Post", excerpt = "", content = "" } = body;
-    const post = await addEntry({ title, excerpt, content });
+    const post = await createPostViaGraphql({ title, excerpt, content });
     if (!post) {
       return Response.json({ error: "Failed to create post" }, { status: 500 });
     }
