@@ -1,0 +1,6 @@
+model = "gpt-5"
+
+[sandbox_workspace_write]
+network_access = true
+
+approval_policy = "untrusted"
